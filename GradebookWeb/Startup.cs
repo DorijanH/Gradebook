@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GradebookSqlServerDAL;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,11 @@ namespace GradebookWeb
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsAdmin", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+            });
 
             services.AddSingleton<WeatherForecastService>();
         }
