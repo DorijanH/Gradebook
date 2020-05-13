@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,7 +22,7 @@ namespace GradebookBLL.DomainModels
         public string Prezime { get; set; }
         public string Spol { get; set; }
         public string EmailAdresa { get; set; }
-        public string DatumRođenja { get; set; }
+        public DateTime DatumRođenja { get; set; }
         public int? IdRazred { get; set; }
 
         [Required]

@@ -13,4 +13,8 @@
     <ProjectReference Include="..\GradebookBLL\GradebookBLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
