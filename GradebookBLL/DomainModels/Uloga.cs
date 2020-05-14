@@ -2,6 +2,14 @@
 
 namespace GradebookBLL.DomainModels
 {
+    public enum Uloge
+    {
+        Admin = 1,
+        Nastavnik,
+        Razrednik,
+        Učenik
+    }
+
     public partial class Uloga
     {
         public Uloga()

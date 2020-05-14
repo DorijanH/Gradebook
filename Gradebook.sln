@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradebookWeb", "GradebookWe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradebookSqlServerDAL", "GradebookSqlServerDAL\GradebookSqlServerDAL.csproj", "{51B7B638-E538-42BF-8DF4-D2929EED859D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradebookBLL", "GradebookBLL\GradebookBLL.csproj", "{4E698533-6412-46EA-9E1C-252EB6C7D3B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradebookBLL", "GradebookBLL\GradebookBLL.csproj", "{4E698533-6412-46EA-9E1C-252EB6C7D3B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
