@@ -1,20 +1,20 @@
 ﻿@page "/login"
 @layout LoginLayout
 @inject NavigationManager NavigationManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @inject IUserRepository UserRepository
+@inject IToastService ToastService
 
 <h2 class="text-center">Dobrodošli</h2>
 
-<EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="LoginParameters">
-    <DataAnnotationsValidator />
-
+<form class="form-signin" method="post" action="LoginCs">
+    
     <label for="email">Email adresa:</label>
-    <InputText id="email" class="form-control" @bind-Value="LoginParameters.Email" autofocus />
-    <ValidationMessage For="@(() => LoginParameters.Email)" />
+    <input id="email" class="form-control" name="Email" autofocus />
 
     <label for="password">Lozinka:</label>
-    <InputText type="password" id="password" class="form-control" @bind-Value="LoginParameters.Password" />
-    <ValidationMessage For="@(() => LoginParameters.Password)" />
+    <input type="password" id="password" class="form-control" name="Pass" />
 
     <div class="form-group">
         <button class="btn btn-primary btn-block" type="submit">PRIJAVA</button>
@@ -23,20 +23,14 @@
             <a href="register" class="btn btn-secondary btn-block">REGISTRACIJA</a>
         }
     </div>
-</EditForm>
+</form>
+
 @code
 {
-    public LoginParameters LoginParameters { get; set; } = new LoginParameters();
-
     private bool IsThereAdmin;
 
     protected override void OnInitialized()
     {
         IsThereAdmin = UserRepository.IsThereAdmin();
-    }
-
-    async Task OnSubmit()
-    {
-
     }
 }

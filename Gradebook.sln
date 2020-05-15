@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradebookSqlServerDAL", "Gr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradebookBLL", "GradebookBLL\GradebookBLL.csproj", "{4E698533-6412-46EA-9E1C-252EB6C7D3B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradebookShared", "GradebookShared\GradebookShared.csproj", "{FF8F1C29-D2AE-4B43-9566-9531DBB29F60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4E698533-6412-46EA-9E1C-252EB6C7D3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E698533-6412-46EA-9E1C-252EB6C7D3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E698533-6412-46EA-9E1C-252EB6C7D3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF8F1C29-D2AE-4B43-9566-9531DBB29F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8F1C29-D2AE-4B43-9566-9531DBB29F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8F1C29-D2AE-4B43-9566-9531DBB29F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8F1C29-D2AE-4B43-9566-9531DBB29F60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

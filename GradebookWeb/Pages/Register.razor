@@ -3,19 +3,46 @@
 @inject NavigationManager NavigationManager
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IUserRepository UserRepository
+@inject IToastService ToastService
 
 <h2 class="text-center">Dobrodošli</h2>
 
-<EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="RegisterParameters">
+<EditForm class="form-signin" OnValidSubmit="OnRegisterSubmit" Model="@RegisterParameters">
     <DataAnnotationsValidator />
+    <ValidationSummary/>
 
-    <label for="ime">Ime:</label>
-    <InputText id="ime" class="form-control" @bind-Value="RegisterParameters.Ime" autofocus />
+    <label for="ime">Ime korisnika:</label>
+    <InputText id="ime" class="form-control" @bind-Value="RegisterParameters.Ime" />
     <ValidationMessage For="@(() => RegisterParameters.Ime)" />
+
+    <label for="prezime">Prezime korisnika:</label>
+    <InputText id="prezime" class="form-control" @bind-Value="RegisterParameters.Prezime" />
+    <ValidationMessage For="@(() => RegisterParameters.Prezime)" />
+
+    <label for="spol">Spol:</label>
+    <InputSelect id="spol" class="form-control" @bind-Value="RegisterParameters.Spol">
+        <option value="" disabled selected>Odaberite spol:</option>
+        <option value="Muško">Muško</option>
+        <option value="Žensko">Žensko</option>
+    </InputSelect>
+    <ValidationMessage For="@(() => RegisterParameters.Spol)" />
+
+    <label for="email">Email adresa:</label>
+    <InputText id="email" class="form-control" @bind-Value="RegisterParameters.Email" />
+    <ValidationMessage For="@(() => RegisterParameters.Email)" />
+
+    <label for="dob">Datum rođenja korisnika:</label>
+    <InputDate id="dob" class="form-control" @bind-Value="RegisterParameters.DoB" />
+    <ValidationMessage For="@(() => RegisterParameters.DoB)" />
 
     <label for="password">Lozinka:</label>
     <InputText type="password" id="password" class="form-control" @bind-Value="RegisterParameters.Password" />
     <ValidationMessage For="@(() => RegisterParameters.Password)" />
+
+    <label for="passwordc">Potvrda lozinke:</label>
+    <InputText type="password" id="passwordc" class="form-control" @bind-Value="RegisterParameters.ConfirmPassword" />
+    <ValidationMessage For="@(() => RegisterParameters.ConfirmPassword)" />
 
     <div class="form-group">
         <button class="btn btn-primary btn-block" type="submit">REGISTRACIJA</button>
@@ -26,9 +53,19 @@
 @code
 {
     public RegisterParameters RegisterParameters { get; set; } = new RegisterParameters();
-
-    async Task OnSubmit()
+    async Task OnRegisterSubmit()
     {
+        var result  = await UserRepository.CreateKorisnik(RegisterParameters, Uloge.Admin);
 
+        if (result)
+        {
+            ToastService.ShowSuccess("Registracija je uspješna!", "Registracija");
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            ToastService.ShowError("Registracija je neuspješno završila", "Registracija");
+            NavigationManager.NavigateTo("/register");
+        }
     }
 }

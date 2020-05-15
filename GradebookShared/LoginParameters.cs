@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GradebookWeb.Data
+namespace GradebookShared
 {
     public class LoginParameters
     {

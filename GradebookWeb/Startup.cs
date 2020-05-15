@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using Blazored.Toast;
 using GradebookBLL.IRepositories;
+using GradebookShared;
 using GradebookSqlServerDAL;
 using GradebookSqlServerDAL.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +14,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 
 namespace GradebookWeb
 {
@@ -31,7 +34,15 @@ namespace GradebookWeb
             services.AddDbContext<GradebookDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<IdentityUser>(options =>
+                {
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredUniqueChars = 0;
+                })
                 .AddEntityFrameworkStores<GradebookDbContext>();
 
             services.AddRazorPages();
@@ -45,11 +56,17 @@ namespace GradebookWeb
             });
 
             services.AddSingleton<WeatherForecastService>();
+
+            services.AddBlazoredToast();
+            services.AddSyncfusionBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MjU3MzI4QDMxMzgyZTMxMmUzMGdVM0h5UVBIbFFRRUtiMjBEZVM0R1hIQWdCdkVGaVBiSW1Zc1R5YkR4OFE9");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

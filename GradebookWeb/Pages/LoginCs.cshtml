@@ -1,0 +1,23 @@
+﻿@page
+@using Blazored.Toast.Services
+@using GradebookShared
+@using Microsoft.AspNetCore.Identity
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<IdentityUser> SignInManager
+@inject IToastService ToastService
+
+@functions
+{
+    public async Task<IActionResult> OnPost()
+    {
+        var email = Request.Form["Email"];
+        var pass = Request.Form["Pass"];
+        var result = await SignInManager.PasswordSignInAsync(email, pass, false, false);
+        if (!result.Succeeded)
+        {
+            ToastService.ShowError("Prijava neuspješna", "Prijava");
+        }
+        
+        return Redirect("~/");
+    }
+}

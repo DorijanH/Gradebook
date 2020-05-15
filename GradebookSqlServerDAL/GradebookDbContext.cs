@@ -236,6 +236,12 @@ namespace GradebookSqlServerDAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
+
+            modelBuilder.Entity<Uloga>().HasData(
+                new Uloga {IdUloga = 1, NazivUloga = "Admin"},
+                new Uloga {IdUloga = 2, NazivUloga = "Nastavnik"},
+                new Uloga {IdUloga = 3, NazivUloga = "Razrednik"},
+                new Uloga {IdUloga = 4, NazivUloga = "Učenik"});
         }
     }
 }
