@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GradebookBLL.DomainModels
 {
@@ -11,9 +12,15 @@ namespace GradebookBLL.DomainModels
         }
 
         public int IdProvjera { get; set; }
+
+        [Required]
         public string Naziv { get; set; }
         public string Opis { get; set; }
+
+        [Required]
         public DateTime? Datum { get; set; }
+
+        [Required]
         public int IdPredmet { get; set; }
 
         public virtual Predmet IdPredmetNavigation { get; set; }

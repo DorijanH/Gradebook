@@ -31,5 +31,17 @@ namespace GradebookSqlServerDAL.Repositories
         {
             return _context.Provjera.Where(p => p.Datum.Value.Date == DateTime.Now.Date).ToList();
         }
+
+        public void AddProvjera(Provjera newProvjera)
+        {
+            _context.Add(newProvjera);
+            _context.SaveChanges();
+        }
+
+        public void UpdateProvjera(Provjera provjera)
+        {
+            _context.Update(provjera);
+            _context.SaveChanges();
+        }
     }
 }

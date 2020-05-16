@@ -8,6 +8,7 @@ namespace GradebookBLL.IRepositories
         List<Provjera> GetAllProvjere();
         List<Provjera> GetDanašnjeProvjere();
 
-
+        void AddProvjera(Provjera newProvjera);
+        void UpdateProvjera(Provjera provjera);
     }
 }
