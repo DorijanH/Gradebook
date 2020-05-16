@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -63,6 +64,11 @@ namespace GradebookSqlServerDAL.Repositories
 
             return false;
 
+        }
+
+        public Korisnik GetKorisnikByEmail(string email)
+        {
+            return _context.Korisnik.First(k => k.EmailAdresa == email);
         }
     }
 }

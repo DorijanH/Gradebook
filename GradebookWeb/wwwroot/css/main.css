@@ -1,0 +1,375 @@
+﻿#plannerSiderBar .info {
+    margin-top: 60px;
+    padding-bottom: 10px;
+}
+
+    #plannerSiderBar .info .image {
+        border: 2px solid #fff;
+        /*box-shadow: 0 3px 7px 0 rgba(117, 117, 255, 0.30);*/
+        width: 100px;
+        height: 90px;
+        border-radius: 50%;
+        margin: auto;
+    }
+
+        #plannerSiderBar .info .image img {
+            height: 100px;
+            width: 100px;
+        }
+
+    #plannerSiderBar .info .name, #plannerSiderBar .info .user-type {
+        text-align: center;
+    }
+
+    #plannerSiderBar .info .name {
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+        letter-spacing: 0.48px;
+        margin-bottom: 0;
+    }
+
+    #plannerSiderBar .info p {
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+    }
+
+    #plannerSiderBar .info .user-type {
+        font-size: 13px;
+        letter-spacing: 0.33px;
+        margin-top: 5px;
+    }
+
+    #plannerSiderBar .info::after {
+        content: '';
+        background-image: linear-gradient(-90deg, #fff 3%, #1b75bc 51%, #fff 95%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+    }
+
+#plannerSiderBar .sidebar-item {
+    height: 50px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    color: #666;
+    cursor: pointer;
+}
+
+    #plannerSiderBar .sidebar-item .text {
+        font-weight: 500;
+        font-size: 13px;
+        letter-spacing: 0.39px;
+        margin: 0 15px;
+        text-align: left;
+    }
+
+    #plannerSiderBar .sidebar-item.active, #plannerSiderBar .sidebar-item.active:hover {
+        background-color: #0d3a5e;
+        color: #fff;
+    }
+
+    #plannerSiderBar .sidebar-item .dashboard-image, #plannerSiderBar .sidebar-item .scheduler-image, #plannerSiderBar .sidebar-item .doctors-image, #plannerSiderBar .sidebar-item .patients-image, #plannerSiderBar .sidebar-item .preference-image, #plannerSiderBar .sidebar-item .about-image {
+        width: 30%;
+        text-align: right;
+        margin-top: 4px;
+        font-size: 17px;
+    }
+
+.planner-header {
+    background: #0d3a5e !important;
+    height: 60px;
+    display: flex;
+    border-bottom: 3px solid #1b75bc;
+}
+
+    .planner-header .name-cantainer {
+        flex: auto;
+        display: inline-flex;
+    }
+
+        .planner-header .name-cantainer .grade-image {
+            font-size: 50px;
+            color: #fff;
+        }
+
+    .planner-header .clinic-name, .planner-header .logout-name {
+        margin: auto 0;
+        color: white;
+        cursor: default;
+    }
+
+    .planner-header div.side-bar-opener {
+        display: block;
+        flex: auto;
+        position: relative;
+    }
+
+    .planner-header .clinic-name.appointment-title {
+        font-size: 24px;
+        padding: 13px 15px;
+    }
+
+    .planner-header div.side-bar-opener .open-icon {
+        margin: 15px;
+        position: absolute;
+        font-size: 20px;
+        color: #fff;
+        height: 24px;
+        width: 24px;
+    }
+
+        .planner-header div.side-bar-opener .open-icon::before {
+            content: '\e941';
+        }
+
+    .planner-header div.side-bar-opener {
+        display: none;
+    }
+
+    .planner-header .logout-container {
+        padding: 5px;
+        flex: initial;
+        display: flex;
+    }
+
+        .planner-header .logout-container .logout-icon-container {
+            opacity: 1;
+            flex: auto;
+            padding: 0 7px;
+            align-self: center;
+        }
+
+        .planner-header .logout-container .logout-name {
+            display: none;
+        }
+
+        .planner-header .logout-container .logout-image {
+            color: #fff;
+            font-size: 24px;
+        }
+
+    .planner-header:not(.device-header) {
+        display: flex;
+    }
+
+        .planner-header:not(.device-header) div .side-bar-opener {
+            display: none;
+        }
+
+        .planner-header:not(.device-header) .logout-container {
+            padding: 7px 10px;
+        }
+
+            .planner-header:not(.device-header) .logout-container .logout-name {
+                flex: initial;
+                display: block;
+            }
+
+            .planner-header:not(.device-header) .logout-container .logout-icon-container {
+                opacity: 0.5;
+            }
+
+/*.planner-header:not(.device-header) .logout-container::before {
+                content: '';
+                height: 33px;
+                border: 1px solid #fff;
+                opacity: 0.5;
+            }*/
+
+.planner-wrapper .e-content-animation {
+    margin-left: 0 !important;
+    padding-left: 243px;
+}
+
+.planner-wrapper.device-wrapper .e-content-animation {
+    margin-left: 243px;
+    padding-left: 0;
+}
+
+.sb-content-overlay {
+    z-index: 10000022;
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    overflow: hidden;
+    pointer-events: none;
+    left: 0px;
+}
+
+.sb-content-overlay.sb-hide {
+    display: none;
+}
+
+.sb-loading {
+    width: 56px;
+    height: 56px;
+    position: absolute;
+    top: calc(50% - 28px);
+    left: calc(50% - 28px);
+    z-index: 10000;
+    border-radius: 50%;
+    padding: 3px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    display: inline-block;
+    background: white;
+}
+
+.circular {
+    animation: rotate 2s linear infinite;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+.path {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+    stroke-linecap: round;
+    stroke: #0d3a5e;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35;
+    }
+
+    100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124;
+    }
+}
+
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icons' !important;
+    font-style: normal;
+    font-size: 20px;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="sfimage-"], [class*=" sfimage-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'sb-icons' !important;
+    font-style: normal;
+    font-size: 20px;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-about:before {
+    content: "\e900";
+}
+
+.icon-dashboard:before {
+    content: "\e901";
+}
+
+.icon-doctors:before {
+    content: "\e903";
+}
+
+.icon-logo:before {
+    content: "\e905";
+}
+
+.icon-logout:before {
+    content: "\e906";
+}
+
+.icon-patients:before {
+    content: "\e908";
+}
+
+.icon-preference:before {
+    content: "\e909";
+}
+
+.icon-schedule:before {
+    content: "\e90c";
+}
+
+.icon-upload_photo:before {
+    content: "\e91a";
+}
+
+.icon-previous:before {
+    content: "\e90a";
+}
+
+.icon-reorder:before {
+    content: "\e90b";
+}
+/*listview customization*/
+
+.menulist.e-listview .e-list-icon {
+    height: auto;
+    width: auto;
+    margin: auto;
+}
+
+.menulist.e-listview:not(.e-list-template) .e-list-item {
+    height: 50px;
+    line-height: 50px;
+    padding: 0px;
+    border-radius: 3px;
+    border-bottom: 0px;
+    align-items: center;
+    color: #666;
+    cursor: pointer;
+}
+
+.menulist.e-listview .e-text-content {
+    text-align: center;
+}
+
+.menulist.e-listview .e-list-icon + .e-list-text {
+    width: calc(100% - 120px);
+}
+
+.menulist.e-listview .e-list-parent.e-ul {
+    margin: 0 16px;
+    width: 210px;
+}
+
+.menulist.e-listview {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif,"-apple-system",BlinkMacSystemFont;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.menulist.e-listview .e-list-item.e-active {
+    background-color: transparent;
+    color: transparent;
+}
+
+

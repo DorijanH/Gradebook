@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GradebookBLL.DomainModels;
 using GradebookShared;
@@ -11,5 +12,8 @@ namespace GradebookBLL.IRepositories
         bool IsThereAdmin();
 
         Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga);
+
+        Korisnik GetKorisnikByEmail(string email);
+
     }
 }

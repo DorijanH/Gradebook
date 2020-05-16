@@ -1,21 +1,76 @@
-﻿@using Blazored.Toast.Configuration
+﻿@using System.Security.Claims
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserRepository UserRepository 
 
 <AuthorizeView>
-    <div class="sidebar">
-        <NavMenu/>
+    <div class="sb-content-overlay @(hide)">
+        <div class="sb-loading">
+            <svg class="circular" height="40" width="40">
+                <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6" stroke-miterlimit="10" />
+            </svg>
+        </div>
     </div>
 
-    <div class="main">
-        <div class="top-row px-4">
-            <LoginDisplay/>
-        </div>
-
-        <div class="content px-4">
+    <div class="planner-wrapper" style="width: 100%; visibility: @visible; opacity: @opacity">
+        <SfSidebar ID="plannerSiderBar" @ref="@SidebarObj" EnableGestures="false" MediaQuery="(min-width: 600px)"
+                   Type="SidebarType.Auto" Created="@OnCreate" CloseOnDocumentClick="false">
+            <ChildContent>
+                <div>
+                    <div class="info">
+                        <div class="image"><img src="@ImagePath" /></div>
+                        <div>
+                            <p class="name">@Korisnik.Ime @Korisnik.Prezime</p>
+                            <p class="user-type">@KorisnikRole</p>
+                        </div>
+                    </div>
+                    <div class="sideparent menulist">
+                        <ul class="nav flex-column">
+                            <li class="nav-item e-list-item">
+                                <NavLink class="nav-link sidebar-item" href="" Match="NavLinkMatch.All">
+                                    <span class="dashboard-image">
+                                        @*<span class="oi oi-home"></span>*@
+                                        <i class="fas fa-home"></i>
+                                    </span>
+                                    <span class="text" aria-hidden="true" title="Dashboard">Dashboard</span>
+                                </NavLink>
+                            </li>
+                            <li class="nav-item e-list-item">
+                                <NavLink class="nav-link sidebar-item" href="neštotreće">
+                                    <span class="dashboard-image">
+                                        <span class="item-image icon-dashboard"></span>
+                                    </span>
+                                    <span class="text" aria-hidden="true" title="Dashboard">Nešto treće</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </ChildContent>
+        </SfSidebar>
+        <main>
+        <div class="planner-header">
+                <div class="side-bar-opener">
+                    <span class="open-icon" @onclick="@ShowSideBar"><i class="fas fa-bars"></i></span>
+                </div>
+            <div class="name-cantainer">
+                    <h1 class="clinic-name appointment-title">Gradebook</h1>
+                </div>
+                <div class="logout-container">
+                    <div class="logout-icon-container">
+                        <form method="post" action="Identity/Account/LogOut">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="fas fa-sign-out-alt logout-image" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                        @*<span class="logout-name">Logout</span>*@
+                    </div>
+                </div>
+            </div>
             @Body
-        </div>
+        </main>
+
     </div>
 </AuthorizeView>
 
@@ -24,6 +79,17 @@
 
 @code
 {
+    SfSidebar SidebarObj;
+
+    private string visible { get; set; } = "hidden";
+
+    private string hide { get; set; }
+    private string opacity { get; set; } = "0";
+
+    private string ImagePath = "/css/icons/";
+    private Korisnik Korisnik;
+    private string KorisnikRole = "";
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -32,5 +98,58 @@
         {
             NavigationManager.NavigateTo("/login");
         }
+        else
+        {
+            SetupUserInformation(authState.User);
+        }
+    }
+
+    private void SetupUserInformation(ClaimsPrincipal user)
+    {
+        Korisnik = UserRepository.GetKorisnikByEmail(user.Identity.Name);
+        var korisnikRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(r => r.Value).ToList();
+
+        ImagePath += GetImageAndRoleForUser(korisnikRoles, Korisnik.Spol);
+    }
+
+    private string GetImageAndRoleForUser(List<string> roles, string gender)
+    {
+        string output = "";
+
+        if (roles.Contains("Admin"))
+        {
+            output = "admin-";
+            KorisnikRole = "Admin";
+        }
+        else if (roles.Contains("Razrednik"))
+        {
+            output = "teacher-";
+            KorisnikRole = "Razrednik";
+        }
+        else if (roles.Contains("Nastavnik"))
+        {
+            output = "teacher-";
+            KorisnikRole = "Nastavnik";
+        }
+        else if (roles.Contains("Učenik"))
+        {
+            output = "student-";
+        }
+
+        output += gender == "Muško" ? "male.png" : "female.png";
+
+        return output;
+    }
+
+    public void OnCreate()
+    {
+        hide = "sb-hide";
+        visible = "visible";
+        opacity = "1";
+    }
+
+    private void ShowSideBar()
+    {
+        SidebarObj.Show();
     }
 }
