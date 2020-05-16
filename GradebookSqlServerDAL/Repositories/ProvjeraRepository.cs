@@ -21,6 +21,7 @@ namespace GradebookSqlServerDAL.Repositories
             return _context.Provjera
                 .Include(p => p.IdPredmetNavigation)
                 .Include(p => p.Ocjena)
+                .ThenInclude(p => p.IdUčenikNavigation)
                 .Include(p => p.IdPredmetNavigation.NastavnikPredaje)
                 .Include(p => p.IdPredmetNavigation.GodinaRazredaNavigation)
                 .ToList();

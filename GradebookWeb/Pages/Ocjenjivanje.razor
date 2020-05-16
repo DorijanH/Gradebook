@@ -1,0 +1,77 @@
+﻿@page "/ocjenjivanje"
+@inject IProvjeraRepository ProvjeraRepository
+
+<div id="provjere" class="planner-provjere">
+    <header>
+        <div class="module-title">
+            <div class="title">OCJENJIVANJE PROVJERA</div>
+            <div class="underline"></div>
+        </div>
+        <div class="add-provjera" @onclick="@OnAddProvjera">
+            <div class="e-icon-add e-icons"></div>
+            <div class="add-provjera-label">Dodaj Novu</div>
+        </div>
+    </header>
+    <div class="provjera-detail-wrapper">
+        <div class="patient-operations">
+            <SfButton CssClass="e-normal add-details" @onclick="@OnAddProvjera" IsPrimary="true">Dodaj Novu Provjeru</SfButton>
+        </div>
+    </div>
+    <div class="patient-display">
+        <SfGrid DataSource="@_provjere">
+            <GridEvents RowSelected="RowSelectHandler" TValue="Provjera"></GridEvents>
+            <GridColumns>
+                <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="100" Format="Hm"></GridColumn>
+                <GridColumn Field="Naziv" HeaderText="Naziv" TextAlign="@TextAlign.Center" Width="50"></GridColumn>
+                @*<GridColumn Field=""></GridColumn>*@ <!--Dodaj ime onoga tko je postavio provjeru, ako možeš-->
+                <GridColumn Field="IdPredmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="100"></GridColumn>
+                <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="250"></GridColumn>
+            </GridColumns>
+        </SfGrid>
+        <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum</b></div>
+        <SfGrid DataSource="@_ocjeneSelectedProvjere">
+            <GridColumns>
+                
+                <GridColumn Field="UcenikIme" HeaderText="Ime Učenika" Width="110"></GridColumn>
+                <GridColumn Field="OstvareniBodovi" HeaderText="Ostvareni Bodovi" Width="50"></GridColumn>
+                <GridColumn Field="Ocjena1" HeaderText="Ocjena" Width="50"></GridColumn>
+                <GridColumn Field="Bilješka" HeaderText="Bilješka" Width="200"></GridColumn>
+            </GridColumns>
+        </SfGrid>
+    </div>
+</div>
+
+@code
+{
+    public Provjera ProvjeraEditModel { get; set; } = new Provjera();
+    private string SaveButton { get; set; } = "Save";
+    private bool ShowPatientEditDialog { get; set; }
+
+    private List<Provjera> _provjere;
+    private Provjera _selectedProvjera;
+    private List<OcjenaGridModel> _ocjeneSelectedProvjere;
+
+    protected override void OnInitialized()
+    {
+        _provjere = ProvjeraRepository.GetAllProvjere();
+    }
+
+    private void OnAddProvjera(MouseEventArgs args)
+    {
+        SaveButton = "Save";
+        ProvjeraEditModel = new Provjera();
+        ShowPatientEditDialog = true;
+    }
+
+    public void RowSelectHandler(RowSelectEventArgs<Provjera> args)
+    {
+        _selectedProvjera = args.Data;
+        _ocjeneSelectedProvjere = _selectedProvjera.Ocjena.Select(o => new OcjenaGridModel
+        {
+            UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
+            Bilješka = o.Bilješka,
+            Ocjena1 = o.Ocjena1,
+            OstvareniBodovi = o.OstvareniBodovi ?? 0
+        }).ToList();
+    }
+}

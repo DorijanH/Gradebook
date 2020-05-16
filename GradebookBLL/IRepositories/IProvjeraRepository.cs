@@ -7,5 +7,7 @@ namespace GradebookBLL.IRepositories
     {
         List<Provjera> GetAllProvjere();
         List<Provjera> GetDanašnjeProvjere();
+
+
     }
 }

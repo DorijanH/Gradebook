@@ -372,4 +372,24 @@
     color: transparent;
 }
 
+header .module-title .title {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    letter-spacing: 0.54px;
+    padding-bottom: 10px;
+}
+
+header .module-title .underline {
+    background: #0d3a5e;
+    border-radius: 5px;
+    width: 52px;
+    height: 4px;
+}
+
+@media (max-width: 850px) {
+    header .module-title .title {
+        padding-bottom: 10px;
+    }
+}
 
