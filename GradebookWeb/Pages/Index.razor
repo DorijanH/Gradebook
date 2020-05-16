@@ -1,7 +1,116 @@
 ﻿@page "/"
 @attribute [Authorize]
-<h1>Hello, world!</h1>
+@inject IUserRepository UserRepository
+@inject IProvjeraRepository ProvjeraRepository
+@inject IBiljeskaRepository BiljeskaRepository 
 
-Welcome to your new app.
+<div id="index" class="planner-dashboard">
+    <div class="row content view-detail-display" style="margin: 0;">
+        <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4 text-display">
+                    <div class="e-card teacher-container">
+                        <div class="e-card-content">
+                            <span class="card-text label-text">Broj Nastavnika</span>
+                            <div class="count-container">
+                                <span class="icon-teacher"><img src="/css/icons/teacher.png" style="opacity: 0.300" /></span>
+                                <span class="teacher-count">@_teacherCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-display">
+                    <div class="e-card student-container">
+                        <div class="e-card-content">
+                            <span class="card-text label-text">Broj Učenika</span>
+                            <div class="count-container">
+                                <span class="icon-student"><img src="/css/icons/student.png" style="opacity: 0.300" /></span>
+                                <span class="student-count">@_studentCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-display">
+                    <div class="e-card classroom-container">
+                        <div class="e-card-content">
+                            <span class="card-text label-text">Broj Razreda</span>
+                            <div class="count-container">
+                                <span class="icon-classroom"><img src="/css/icons/classroom.png" style="opacity: 0.300" /></span>
+                                <span class="classroom-count">@_classroomCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12"> <!--Nisam preuzeo dashboard-control-->
+                    <div class="e-card grid-container">
+                        <div class="e-card-header">
+                            <div class="e-card-header-caption">
+                                <div class="e-card-header-title">
+                                    <span class="label-text">Zakazane Današnje Provjere</span><span class="link-text">
+                                        <NavLink class="btn btn-outline-primary nav-link" href="provjere">Zakaži Provjeru</NavLink>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="e-card-content">
+                            <SfGrid id="Grid" DataSource="@_provjere" Height="320px">
+                                <GridColumns>
+                                    <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="100" Format="Hm"></GridColumn>
+                                    <GridColumn Field="Naziv" HeaderText="Naziv" TextAlign="@TextAlign.Center" Width="50"></GridColumn>
+                                    @*<GridColumn Field=""></GridColumn>*@ <!--Dodaj ime onoga tko je postavio provjeru, ako možeš-->
+                                    <GridColumn Field="IdPredmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="100"></GridColumn>
+                                    <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="250"></GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 list-display" style="padding-right: 0;">
+            <div class="recent-activity">
+                <SfListView Height="100%" Width="100%" DataSource="@_bilješke" ShowHeader="true" CssClass="activity-template" HeaderTitle="Nedavne Bilješke">
+                    <ListViewTemplates TValue="Bilješka">
+                        <Template>
+                            <div class="activity-container bilješka">
+                                @{
+                                    var bilješka = (context as Bilješka);
+                                    var imeKorisnik = bilješka.ZabilježioKorisnikNavigation.Ime;
+                                    var prezimeKorisnik = bilješka.ZabilježioKorisnikNavigation.Prezime;
+                                    var imeUčenika = bilješka.IdUčenikNavigation.Ime;
+                                    var prezimeUčenika = bilješka.IdUčenikNavigation.Prezime;
+                                }
+                                <div class="activity-message"><span class="type-name">Nova Bilješka</span> - <span>@imeKorisnik @prezimeKorisnik o @imeUčenika @prezimeUčenika</span></div>
+                                <span class="activity-opis">@bilješka.Opis</span>
+                                <span class="activity-time">@bilješka.TimeSince()</span>
+                            </div>
+                        </Template>
+                    </ListViewTemplates>
+                    @*<ListViewFieldSettings Text="" Id="Name"></ListViewFieldSettings>*@
+                </SfListView>
+            </div>
+        </div>
+    </div>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code
+{
+    private int _teacherCount;
+    private int _studentCount;
+    private int _classroomCount;
+
+    private List<Provjera> _provjere = new List<Provjera>();
+    private List<Bilješka> _bilješke = new List<Bilješka>();
+
+    protected override void OnInitialized()
+    {
+        _teacherCount = UserRepository.GetNumberOfTeachers();
+        _studentCount = UserRepository.GetNumberOfStudents();
+        _classroomCount = UserRepository.GetNumberOfClassrooms();
+
+        _provjere = ProvjeraRepository.GetDanašnjeProvjere();
+        _bilješke = BiljeskaRepository.GetAllBilješke();
+    }
+}

@@ -70,5 +70,21 @@ namespace GradebookSqlServerDAL.Repositories
         {
             return _context.Korisnik.First(k => k.EmailAdresa == email);
         }
+
+        public int GetNumberOfTeachers()
+        {
+            return _context.KorisnikUloga.Count(ku =>
+                (ku.IdUloga == (int) Uloge.Nastavnik || ku.IdUloga == (int) Uloge.Razrednik));
+        }
+
+        public int GetNumberOfStudents()
+        {
+            return _context.KorisnikUloga.Count(ku => ku.IdUloga == (int) Uloge.Učenik);
+        }
+
+        public int GetNumberOfClassrooms()
+        {
+            return _context.Razred.Count();
+        }
     }
 }

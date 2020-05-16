@@ -12,8 +12,13 @@ namespace GradebookBLL.IRepositories
         bool IsThereAdmin();
 
         Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga);
-
         Korisnik GetKorisnikByEmail(string email);
+
+        int GetNumberOfTeachers();
+        int GetNumberOfStudents();
+        int GetNumberOfClassrooms();
+
+
 
     }
 }

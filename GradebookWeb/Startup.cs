@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Blazored.Toast;
+using GradebookBLL.DomainModels;
 using GradebookBLL.IRepositories;
 using GradebookShared;
 using GradebookSqlServerDAL;
@@ -49,6 +50,8 @@ namespace GradebookWeb
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProvjeraRepository, ProvjeraRepository>();
+            services.AddScoped<IBiljeskaRepository, BiljeskaRepository>();
 
             services.AddAuthorization(options =>
             {
