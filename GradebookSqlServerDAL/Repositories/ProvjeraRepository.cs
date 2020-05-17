@@ -60,5 +60,10 @@ namespace GradebookSqlServerDAL.Repositories
             _context.Update(ocjena);
             _context.SaveChanges();
         }
+
+        public Provjera GetProvjera(int provjeraId)
+        {
+            return _context.Provjera.First(p => p.IdProvjera == provjeraId);
+        }
     }
 }

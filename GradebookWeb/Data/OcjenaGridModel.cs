@@ -2,6 +2,7 @@
 {
     public class OcjenaGridModel
     {
+        public int OcjenaId { get; set; }
         public string UcenikIme { get; set; }
         public int OstvareniBodovi { get; set; }
         public string Bilješka { get; set; }

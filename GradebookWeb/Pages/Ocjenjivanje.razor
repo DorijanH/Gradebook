@@ -28,12 +28,12 @@
     {
         <div class="patient-display">
             <SfGrid DataSource="@_provjere">
-                <GridEvents RowSelected="RowSelectHandler" OnRecordDoubleClick="@OnDoubleClick" TValue="Provjera"></GridEvents>
+                <GridEvents RowSelected="RowSelectHandler" OnRecordDoubleClick="@OnDoubleClick" TValue="ProvjeraGridModel"></GridEvents>
                 <GridColumns>
-                    <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="100" Format="Hm"></GridColumn>
+                    <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="100" Format="dd.MM.yyyy H:mm"></GridColumn>
                     <GridColumn Field="Naziv" HeaderText="Naziv" TextAlign="@TextAlign.Center" Width="50"></GridColumn>
                     <!--Dodaj ime onoga tko je postavio provjeru, ako možeš-->
-                    <GridColumn Field="IdPredmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="100"></GridColumn>
+                    <GridColumn Field="Predmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="100"></GridColumn>
                     <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="250"></GridColumn>
                 </GridColumns>
             </SfGrid>
@@ -81,7 +81,7 @@
                     <ValidationMessage For="@(() => ProvjeraEditModel.Naziv)" />
                 </div>
                 <div class="field-container">
-                    <SfDropDownList FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Iz Predmeta" @bind-Value="@ProvjeraEditModel.IdPredmet" DataSource="@_allPredmeti">
+                    <SfDropDownList TItem="@PredmetGridModel" TValue="int?" DataSource="@_allPredmeti" FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Iz Predmeta" @bind-Value="@ProvjeraEditModel.IdPredmet">
                         <DropDownListFieldSettings Text="Naziv" Value="IdPredmet"></DropDownListFieldSettings>
                     </SfDropDownList>
                     <ValidationMessage For="@(() => ProvjeraEditModel.IdPredmet)" />
@@ -174,10 +174,10 @@
     public Provjera ProvjeraEditModel { get; set; } = new Provjera();
     private string SaveButton { get; set; } = "Save";
     private bool _showProvjeraEditDialog;
-    private SfDialog _dialogObj;
+    private SfDialog _dialogObj = new SfDialog();
     private DialogAnimationSettings _dialogAnimation = new DialogAnimationSettings { Effect = DialogEffect.Zoom };
     private string _provjeraHeader;
-    private List<Predmet> _allPredmeti = new List<Predmet>();
+    private List<PredmetGridModel> _allPredmeti;
 
     public Ocjena OcjenaEditModel { get; set; } = new Ocjena();
     private string OcjenaSaveButton { get; set; } = "Save";
@@ -191,14 +191,23 @@
     private ButtonModel _deleteBtn = new ButtonModel { Content = "Da", IsPrimary = true };
     private ButtonModel _cancelBtn = new ButtonModel { Content = "Ups, ne" };
 
-    private List<Provjera> _provjere;
-    private Provjera _selectedProvjera;
+    private List<ProvjeraGridModel> _provjere = new List<ProvjeraGridModel>();
+    private ProvjeraGridModel _selectedProvjera;
     private List<OcjenaGridModel> _ocjeneSelectedProvjere;
+
 
     protected override void OnInitialized()
     {
-        _provjere = ProvjeraRepository.GetAllProvjere();
-        _allPredmeti = PredmetRepository.GetAllPredmeti();
+        _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
+        {
+            ProvjeraId = p.IdProvjera,
+            PredmetId = p.IdPredmet.Value,
+            Predmet = p.IdPredmetNavigation.Naziv,
+            Datum = p.Datum.Value,
+            Naziv = p.Naziv,
+            Opis = p.Opis
+        }).ToList();
+        _allPredmeti = PredmetGridModel.ToGridModel(PredmetRepository.GetAllPredmeti());
     }
 
     private void OnAddProvjera(MouseEventArgs args)
@@ -213,9 +222,9 @@
     {
         OcjenaSaveButton = "Save";
         _ocjenaHeader = "Nova Ocjena";
-        OcjenaEditModel = new Ocjena { IdProvjera = _selectedProvjera.IdProvjera };
+        OcjenaEditModel = new Ocjena { IdProvjera = _selectedProvjera.ProvjeraId };
 
-        _allUceniciProvjere = PredmetRepository.GetAllUceniciPredmeta(_selectedProvjera.IdPredmet);
+        _allUceniciProvjere = PredmetRepository.GetAllUceniciPredmeta(_selectedProvjera.PredmetId);
 
         _showOcjenaEditDialog = true;
     }
@@ -232,10 +241,11 @@
         }
     }
 
-    public void RowSelectHandler(RowSelectEventArgs<Provjera> args)
+    public void RowSelectHandler(RowSelectEventArgs<ProvjeraGridModel> args)
     {
         _selectedProvjera = args.Data;
-        _ocjeneSelectedProvjere = _selectedProvjera.Ocjena.Select(o => new OcjenaGridModel
+
+        _ocjeneSelectedProvjere = ProvjeraRepository.GetOcjeneForProvjera(_selectedProvjera.ProvjeraId).Select(o => new OcjenaGridModel
         {
             UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
             Bilješka = o.Bilješka,
@@ -244,17 +254,10 @@
         }).ToList();
     }
 
-    private void OnDoubleClick(RecordDoubleClickEventArgs<Provjera> args)
+    private void OnDoubleClick(RecordDoubleClickEventArgs<ProvjeraGridModel> args)
     {
-        ProvjeraEditModel = new Provjera
-        {
-            Ocjena = args.RowData.Ocjena,
-            Datum = args.RowData.Datum,
-            IdPredmet = args.RowData.IdPredmet,
-            IdProvjera = args.RowData.IdProvjera,
-            Naziv = args.RowData.Naziv,
-            Opis = args.RowData.Opis
-        };
+        ProvjeraEditModel = ProvjeraRepository.GetProvjera(args.RowData.ProvjeraId);
+
         _provjeraHeader = "Uređivanje provjere";
         SaveButton = "Ažuriraj";
         _showProvjeraEditDialog = true;
@@ -265,12 +268,26 @@
         if (SaveButton == "Save")
         {
             ProvjeraRepository.AddProvjera(ProvjeraEditModel);
-            _provjere = ProvjeraRepository.GetAllProvjere();
+            _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
+            {
+                ProvjeraId = p.IdProvjera,
+                PredmetId = p.IdPredmet.Value,
+                Datum = p.Datum.Value,
+                Naziv = p.Naziv,
+                Opis = p.Opis
+            }).ToList();
         }
         else
         {
             ProvjeraRepository.UpdateProvjera(ProvjeraEditModel);
-            _provjere = ProvjeraRepository.GetAllProvjere();
+            _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
+            {
+                ProvjeraId = p.IdProvjera,
+                PredmetId = p.IdPredmet.Value,
+                Datum = p.Datum.Value,
+                Naziv = p.Naziv,
+                Opis = p.Opis
+            }).ToList();
         }
 
         _dialogObj.Hide();
@@ -294,7 +311,7 @@
             if (_selectedProvjera != null)
             {
                 _ocjeneSelectedProvjere = ProvjeraRepository
-                    .GetOcjeneForProvjera(_selectedProvjera.IdProvjera)
+                    .GetOcjeneForProvjera(_selectedProvjera.ProvjeraId)
                     .Select(o => new OcjenaGridModel
                     {
                         UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
@@ -310,7 +327,7 @@
             if (_selectedProvjera != null)
             {
                 _ocjeneSelectedProvjere = ProvjeraRepository
-                    .GetOcjeneForProvjera(_selectedProvjera.IdProvjera)
+                    .GetOcjeneForProvjera(_selectedProvjera.ProvjeraId)
                     .Select(o => new OcjenaGridModel
                     {
                         UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,

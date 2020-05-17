@@ -6,6 +6,7 @@ namespace GradebookBLL.IRepositories
     public interface IProvjeraRepository
     {
         List<Provjera> GetAllProvjere();
+        Provjera GetProvjera(int provjeraId);
         List<Provjera> GetDanašnjeProvjere();
 
         void AddProvjera(Provjera newProvjera);

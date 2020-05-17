@@ -21,7 +21,7 @@ namespace GradebookBLL.DomainModels
         public DateTime? Datum { get; set; }
 
         [Required]
-        public int IdPredmet { get; set; }
+        public int? IdPredmet { get; set; }
 
         public virtual Predmet IdPredmetNavigation { get; set; }
         public virtual ICollection<Ocjena> Ocjena { get; set; }
