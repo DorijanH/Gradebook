@@ -53,6 +53,7 @@ namespace GradebookWeb
             services.AddScoped<IProvjeraRepository, ProvjeraRepository>();
             services.AddScoped<IBiljeskaRepository, BiljeskaRepository>();
             services.AddScoped<IPredmetRepository, PredmetRepository>();
+            services.AddScoped<IRazredRepository, RazredRepository>();
 
             services.AddAuthorization(options =>
             {

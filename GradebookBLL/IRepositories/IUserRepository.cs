@@ -11,14 +11,16 @@ namespace GradebookBLL.IRepositories
     {
         bool IsThereAdmin();
 
-        Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga);
+        Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga, int idRazred = -1);
+        List<Korisnik> GetAllKorisnici();
         Korisnik GetKorisnikByEmail(string email);
+        void DeleteKorisnik(Korisnik korisnik);
 
         int GetNumberOfTeachers();
         int GetNumberOfStudents();
         int GetNumberOfClassrooms();
 
-
+        List<KorisnikUloga> GetAllUloge();
 
     }
 }

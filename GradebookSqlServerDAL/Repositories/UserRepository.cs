@@ -7,6 +7,7 @@ using GradebookBLL.DomainModels;
 using GradebookBLL.IRepositories;
 using GradebookShared;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GradebookSqlServerDAL.Repositories
 {
@@ -26,7 +27,7 @@ namespace GradebookSqlServerDAL.Repositories
             return _context.KorisnikUloga.Any(ku => ku.IdUloga == (int)Uloge.Admin);
         }
 
-        public async Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga)
+        public async Task<bool> CreateKorisnik(RegisterParameters registerParameters, Uloge uloga, int razredId = -1)
         {
             var user = new IdentityUser { UserName = registerParameters.Email, Email = registerParameters.Email };
             var result = await _userManager.CreateAsync(user, registerParameters.Password);
@@ -39,7 +40,8 @@ namespace GradebookSqlServerDAL.Repositories
                 Spol = registerParameters.Spol,
                 EmailAdresa = registerParameters.Email,
                 DatumRođenja = registerParameters.DoB,
-                User = user
+                User = user,
+                IdRazred = razredId != -1 ? razredId : (int?)null
             });
 
             var userCreated = await _context.SaveChangesAsync(); //should be 1?
@@ -66,9 +68,27 @@ namespace GradebookSqlServerDAL.Repositories
 
         }
 
+        public List<Korisnik> GetAllKorisnici()
+        {
+            return _context.Korisnik.ToList();
+        }
+
         public Korisnik GetKorisnikByEmail(string email)
         {
-            return _context.Korisnik.First(k => k.EmailAdresa == email);
+            return _context.Korisnik.Where(k => k.EmailAdresa == email)
+                .Include(k => k.Ocjena)
+                .ThenInclude(k => k.IdProvjeraNavigation)
+                .Include(k => k.BilješkaIdUčenikNavigation)
+                .ThenInclude(k => k.ZabilježioKorisnikNavigation)
+                .First();
+        }
+
+        public void DeleteKorisnik(Korisnik korisnik)
+        {
+            _context.Remove(korisnik);
+            _context.SaveChanges();
+
+            _userManager.DeleteAsync(korisnik.User);
         }
 
         public int GetNumberOfTeachers()
@@ -85,6 +105,11 @@ namespace GradebookSqlServerDAL.Repositories
         public int GetNumberOfClassrooms()
         {
             return _context.Razred.Count();
+        }
+
+        public List<KorisnikUloga> GetAllUloge()
+        {
+            return _context.KorisnikUloga.ToList();
         }
     }
 }

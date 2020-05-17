@@ -112,7 +112,7 @@
                 letter-spacing: 0.39px;
                 line-height: 18px;
                 margin: 10px 0;
-                border-left: 2px solid blue;
+                border-left: 2px solid #0d3a5e;
             }
 
             .e-dialog.e-edit-dialog .e-dlg-content .grid-edit-dialog .field-row.history-row .empty-container {

@@ -56,6 +56,11 @@ namespace GradebookSqlServerDAL.Repositories
             _context.SaveChanges();
         }
 
+        public Ocjena GetOcjena(int ocjenaId)
+        {
+            return _context.Ocjena.First(o => o.IdOcjena == ocjenaId);
+        }
+
         public List<Ocjena> GetOcjeneForProvjera(int provjeraId)
         {
             return _context.Ocjena.Where(o => o.IdProvjera == provjeraId).Include(o => o.IdUčenikNavigation).ToList();

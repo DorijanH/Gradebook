@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GradebookBLL.DomainModels
 {
@@ -19,13 +18,17 @@ namespace GradebookBLL.DomainModels
         }
 
         public int IdKorisnik { get; set; }
+        [Required]
         public string Ime { get; set; }
+        [Required]
         public string Prezime { get; set; }
-
         public string PunoIme => $"{Ime} {Prezime}";
-
+        [Required]
         public string Spol { get; set; }
+        [Required]
+        [DataType(DataType.EmailAddress)]
         public string EmailAdresa { get; set; }
+        [Required]
         public DateTime DatumRođenja { get; set; }
         public int? IdRazred { get; set; }
 

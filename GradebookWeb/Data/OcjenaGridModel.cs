@@ -16,7 +16,8 @@ namespace GradebookWeb.Data
         {
             return ocjene.Select(o => new OcjenaGridModel
             {
-                UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
+                OcjenaId = o.IdOcjena,
+                UcenikIme = o.IdUčenikNavigation.Ime + " " + o.IdUčenikNavigation.Prezime,
                 Bilješka = o.Bilješka,
                 Ocjena1 = o.Ocjena1,
                 OstvareniBodovi = o.OstvareniBodovi ?? 0

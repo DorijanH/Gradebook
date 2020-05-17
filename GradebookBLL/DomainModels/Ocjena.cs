@@ -12,7 +12,7 @@ namespace GradebookBLL.DomainModels
         [Required]
         public int IdProvjera { get; set; }
         [Required]
-        public int IdUčenik { get; set; }
+        public int? IdUčenik { get; set; }
 
         public virtual Provjera IdProvjeraNavigation { get; set; }
         public virtual Korisnik IdUčenikNavigation { get; set; }

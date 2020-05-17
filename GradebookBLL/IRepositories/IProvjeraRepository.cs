@@ -14,6 +14,7 @@ namespace GradebookBLL.IRepositories
         void DeleteProvjeraById(int provjeraId);
 
         void AddOcjena(Ocjena newOcjena);
+        Ocjena GetOcjena(int ocjenaId);
         List<Ocjena> GetOcjeneForProvjera(int provjeraId);
         void UpdateOcjena(Ocjena ocjena);
         void DeleteOcjenaById(int ocjenaId);

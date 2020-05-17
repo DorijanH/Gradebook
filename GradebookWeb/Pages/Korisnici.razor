@@ -1,0 +1,382 @@
+﻿@page "/korisnici"
+@using Syncfusion.Blazor.DocumentEditor
+@attribute [Authorize]
+@inject IUserRepository UserRepository
+@inject IRazredRepository RazredRepository
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div id="provjere" class="planner-provjere">
+    <header>
+        <div class="module-title">
+            <div class="title">KORISNICI SUSTAVA</div>
+            <div class="underline"></div>
+        </div>
+        <div class="add-provjera" @onclick="@OnAddKorisnika">
+            <div class="e-icon-add e-icons"></div>
+            <div class="add-provjera-label">Dodaj Novog Korisnika</div>
+        </div>
+    </header>
+    <div class="provjera-detail-wrapper">
+        <div class="patient-operations">
+            <SfButton CssClass="e-normal add-details" @onclick="@OnAddKorisnika" IsPrimary="true">Dodaj Novog Korisnika</SfButton>
+        </div>
+    </div>
+    @if (_korisnici.Count <= 0)
+    {
+        <p>Nema korisnika u sustavu</p>
+    }
+    else
+    {
+        <div class="patient-display">
+            <SfGrid SelectedRowIndex="0" DataSource="@_korisnici" AllowSorting="true" AllowPaging="true" AllowGrouping="true">
+                <GridEvents OnRecordDoubleClick="@OnDoubleClick" TValue="KorisnikGridModel"></GridEvents> @*RowSelected="RowSelectHandler"*@
+                <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" AllowEditOnDblClick="false" Mode="EditMode.Dialog"></GridEditSettings>
+                <GridColumns>
+                    <GridColumn IsPrimaryKey="true" Field="IdKorisnik" Width="50" HeaderText="ID" TextAlign="@TextAlign.Left"></GridColumn>
+                    <GridColumn Field="PunoIme" HeaderText="Ime I Prezime" TextAlign="@TextAlign.Left" Width="200"></GridColumn>
+                    <GridColumn Field="Spol" HeaderText="Spol" TextAlign="@TextAlign.Left" Width="100"></GridColumn>
+                    <GridColumn Field="Razred" HeaderText="Razred" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                    <GridColumn Field="Uloga" HeaderText="Uloga" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                    <GridColumn Field="Dob" HeaderText="Datum Rođenja" TextAlign="@TextAlign.Left" Width="100" Format="dd.MM.yyyy"></GridColumn>
+                    <GridColumn Field="EmailAdresa" HeaderText="Email Adresa" TextAlign="@TextAlign.Left" Width="100"></GridColumn>
+                    @*<GridColumn TextAlign="@TextAlign.Center" Width="20">
+                        <Template>
+                            <button class="e-btn btn-danger" @onclick="@(() => _isConfirmDelete = true)"><i class="fas fa-trash"></i></button>
+                        </Template>
+                    </GridColumn>*@
+                </GridColumns>
+            </SfGrid>
+        </div>
+    }
+</div>
+
+@if (KorisnikModel != null && _showKorisnikDetailDialog)
+{
+    <SfDialog @ref="@_detailDialog" Target="body" Width="500px" @bind-Visible="@_showKorisnikDetailDialog" CssClass="e-edit-dialog" IsModal="true" ShowCloseIcon="true" Header="@_korisnikHeader" AnimationSettings="@_dialogAnimation">
+        <DialogTemplates>
+            <Content>
+                <div class="grid-edit-dialog">
+                    <div class="field-row">
+                        <label> ID Korisnika: </label><span id="Id">@KorisnikGridModel.IdKorisnik</span>
+                    </div>
+                    <div class="field-row">
+                        <label> Ime I Prezime: </label><span id="punoime">@KorisnikGridModel.PunoIme</span>
+                    </div>
+                    <div class="field-row">
+                        <label> Spol: </label><span id="spol">@KorisnikGridModel.Spol</span>
+                    </div>
+                    <div class="field-row">
+                        <label> Email Adresa: </label><span id="email">@KorisnikGridModel.EmailAdresa</span>
+                    </div>
+                    <div class="field-row">
+                        <label> Datum Rođenja: </label><span id="dob">@KorisnikGridModel.Dob</span>
+                    </div>
+                    @if (KorisnikGridModel.Uloga == "Razrednik" && KorisnikGridModel.IdRazred.HasValue)
+                    {
+                        <div class="field-row">
+                            <label> Razrednik razredu: </label><span id="razrednikrazredu">@KorisnikGridModel.Razred</span>
+                        </div>
+                    }
+                    else if (KorisnikGridModel.Uloga == "Nastavnik" || KorisnikGridModel.Uloga == "Admin")
+                    {
+                        <div class="field-row">
+                            <label> Uloga: </label><span id="uloga">@KorisnikGridModel.Uloga</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="field-row">
+                            <label> Pohađa razred: </label><span id="razred">@KorisnikGridModel.Razred</span>
+                        </div>
+                        <div class="field-row history-row">
+                            <label>Bilješke O Učeniku</label>
+                            <div id="history-wrapper">
+                                @foreach (var bilješka in KorisnikModel.BilješkaIdUčenikNavigation)
+                                {
+                                    <div class="activity-container bilješka">
+                                        <div class="activity-message"><span class="type-name">@bilješka.ZabilježioKorisnikNavigation.PunoIme</span></div>
+                                        <span class="activity-opis">@bilješka.Opis</span>
+                                        <span class="activity-time">@bilješka.Datum.Value.Date - @bilješka.TimeSince()</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="field-row history-row">
+                            <label>Ocjene Učenika:</label>
+                            <div id="history-wrapper">
+                                @foreach (var ocjena in KorisnikModel.Ocjena)
+                                {
+                                    <div class="activity-container bilješka">
+                                        <div class="activity-message"><span class="type-name">@ocjena.IdProvjeraNavigation.Naziv</span></div>
+                                        <span class="activity-opis">Bilješka: @ocjena.Bilješka</span>
+                                        <span class="activity-opis">Ostvareni Bodovi: @ocjena.OstvareniBodovi </span>
+                                        <span class="activity-opis">Ocjena: @ocjena.Ocjena1</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </Content>
+            <FooterTemplate>
+                <div class="button-container" style="display: flex; float: right;">
+                    <SfButton CssClass="e-normal" @onclick="@OnDeleteClick">Izbriši</SfButton>
+                    <SfButton CssClass="e-normal" IsPrimary="true" @onclick="@ShowEditDialog">Uredi</SfButton>
+                </div>
+            </FooterTemplate>
+        </DialogTemplates>
+    </SfDialog>
+}
+
+@if (_showKorisnikEditDialog)
+{
+    <SfDialog @ref="@_editDialog" Target="body" Width="450px" CssClass="new-patient-dialog" IsModal="true" @bind-Visible="@_showKorisnikEditDialog"
+              ShowCloseIcon="true" Header="@_korisnikHeader" AnimationSettings="@_dialogAnimation">
+        <ChildContent>
+            <EditForm Model="@KorisnikGridModel" OnSubmit="@HandleSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="field-container">
+                    <div class="ime">
+                        <SfTextBox CssClass="patient-name e-field" Placeholder="Ime" FloatLabelType="@FloatLabelType.Always" @bind-Value="@KorisnikGridModel.Ime"></SfTextBox>
+                        <ValidationMessage For="@(() => KorisnikGridModel.Ime)"/>
+                    </div>
+                    <div class="prezime">
+                        <SfTextBox CssClass="patient-name e-field" Placeholder="Prezime" FloatLabelType="@FloatLabelType.Always" @bind-Value="@KorisnikGridModel.Prezime"></SfTextBox>
+                        <ValidationMessage For="@(() => KorisnikGridModel.Prezime)" />
+                    </div>
+                </div>
+                <div class="field-container gender-container">
+                    <div class="gender">
+                        <div class="e-btn-group e-round-corner e-field">
+                            <input type="radio" id="userCheckMale" name="Gender" Value="Muško" @onchange="@(() => ChangeUserSpol("Muško"))" />
+                            <label class="e-btn" for="userCheckMale">Muško</label>
+                            <input type="radio" id="userCheckFemale" name="Gender" Value="Žensko" @onchange="@(() => ChangeUserSpol("Žensko"))"/>
+                            <label class="e-btn" for="userCheckFemale">Žensko</label>
+                        </div>
+                    </div>
+                    <div class="dob">
+                        <SfDatePicker ID="dob" CssClass="e-field" Placeholder="Datum Rođenja" @bind-Value="@KorisnikGridModel.Dob" Max="DateTime.Now" FloatLabelType="@FloatLabelType.Always" ShowClearButton="false"></SfDatePicker>
+                        <ValidationMessage For="@(() => KorisnikGridModel.Dob)" />
+                    </div>
+                </div>
+                <div class="field-container email-container">
+                    <SfTextBox CssClass="e-field" Placeholder="Email Adresa" FloatLabelType="@FloatLabelType.Always" @bind-Value="@KorisnikGridModel.EmailAdresa"></SfTextBox>
+                    <ValidationMessage For="@(() => KorisnikGridModel.EmailAdresa)" />
+                </div>
+                <div class="field-container contact-container">
+                    <div class="gender">
+                        <div class="e-btn-group e-round-corner e-field">
+                            <input type="radio" id="userRoleAdmin" name="Role" Value="1" @onchange="@(() => ChangeUserRole(1))" />
+                            <label class="e-btn" for="userRoleAdmin">Admin</label>
+                            <input type="radio" id="userRoleStudent" name="Role" Value="2" @onchange="@(() => ChangeUserRole(2))" />
+                            <label class="e-btn" for="userRoleStudent">Nastavnik</label>
+                            <input type="radio" id="userRoleStudent" name="Role" Value="3" @onchange="@(() => ChangeUserRole(3))" />
+                            <label class="e-btn" for="userRoleStudent">Razrednik</label>
+                            <input type="radio" id="userRoleNastavnik" name="Role" Value="4" @onchange="@(() => ChangeUserRole(4))" />
+                            <label class="e-btn" for="userRoleNastavnik">Učenik</label>
+                        </div>
+                    </div>
+                    <div class="blood-group">
+                        <SfDropDownList Enabled="@_enabled" FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Pohađa Razred" @bind-Value="@KorisnikGridModel.IdRazred" DataSource="@_allRazredi">
+                            <DropDownListFieldSettings Text="Oznaka" Value="IdRazred"></DropDownListFieldSettings>
+                        </SfDropDownList>
+                        <ValidationMessage For="@(() => KorisnikGridModel.IdRazred)" />
+                    </div>
+                </div>
+                @if (_creatingKorisnik)
+                {
+                    <div class="field-container">
+                        <SfTextBox CssClass="e-field" Placeholder="Lozinka" FloatLabelType="@FloatLabelType.Always" @bind-Value="@KorisnikGridModel.Lozinka"></SfTextBox>
+                        <ValidationMessage For="@(() => KorisnikGridModel.Lozinka)" />
+                    </div>
+                    <div class="field-container">
+                        <SfTextBox CssClass="e-field" Placeholder="Potvrda Lozinke" FloatLabelType="@FloatLabelType.Always" @bind-Value="@KorisnikGridModel.PotvrdaLozinke"></SfTextBox>
+                        <ValidationMessage For="@(() => KorisnikGridModel.PotvrdaLozinke)" />
+                    </div>
+                }
+                <div class="e-footer-content">
+                    <div class="field-container">
+                        <button type="button" class="e-btn e-normal" @onclick="@OnCancelClick">Cancel</button>
+                        <button type="submit" class="e-btn e-normal e-primary">@SaveButton</button>
+                    </div>
+                </div>
+            </EditForm>
+        </ChildContent>
+    </SfDialog>
+}
+
+@if (_isConfirmDelete)
+{
+    <SfDialog @bind-Visible="@_isConfirmDelete" CssClass="e-confirm-dialog" Width="auto" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header>
+                <span>Potvrda brisanja</span>
+            </Header>
+            <Content>
+                Jeste li sigurni da želite obrisati ovog korisnika?
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton ButtonModel="@_deleteBtn" OnClick="@HandleDelete"></DialogButton>
+            <DialogButton ButtonModel="@_cancelBtn" OnClick="@HandleCancelDelete"></DialogButton>
+        </DialogButtons>
+    </SfDialog>
+}
+
+@code
+{
+    public Korisnik KorisnikModel { get; set; }
+    public KorisnikGridModel KorisnikGridModel { get; set; }
+    private string SaveButton { get; set; } = "Dodaj";
+    private bool _showKorisnikDetailDialog;
+    private bool _showKorisnikEditDialog;
+    private bool _creatingKorisnik;
+    private SfDialog _editDialog;
+    private SfDialog _detailDialog;
+    private DialogAnimationSettings _dialogAnimation = new DialogAnimationSettings { Effect = DialogEffect.Zoom };
+    private string _korisnikHeader;
+    private List<PredmetGridModel> _allPredmeti;
+
+    public Ocjena OcjenaEditModel { get; set; } = new Ocjena();
+    private string OcjenaSaveButton { get; set; } = "Save";
+    private bool _showOcjenaEditDialog;
+    private SfDialog _dialog2Obj;
+    private string _ocjenaHeader;
+    private List<Korisnik> _allUceniciProvjere = new List<Korisnik>();
+
+    private bool _isConfirmDelete;
+    private string _whatIsDeleting;
+    private ButtonModel _deleteBtn = new ButtonModel { Content = "Da", IsPrimary = true };
+    private ButtonModel _cancelBtn = new ButtonModel { Content = "Ups, ne" };
+
+    private List<KorisnikGridModel> _korisnici = new List<KorisnikGridModel>();
+    private ProvjeraGridModel _selectedProvjera;
+    private List<OcjenaGridModel> _ocjeneSelectedProvjere;
+    private OcjenaGridModel _selectedOcjena;
+
+    private bool _enabled = true;
+    private List<RazredGridModel> _allRazredi;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userEmail = auth.User.Identity.Name;
+
+        _korisnici = KorisnikGridModel.ToGridModel(UserRepository.GetAllKorisnici(), UserRepository.GetAllUloge(), RazredRepository.GetAllRazredi());
+        var currentKorisnik = _korisnici.First(k => k.EmailAdresa == userEmail);
+        _korisnici.Remove(currentKorisnik);
+
+        _allRazredi = RazredGridModel.ToGridModel(RazredRepository.GetAllRazredi());
+    }
+
+    private void OnAddKorisnika(MouseEventArgs args)
+    {
+        SaveButton = "Dodaj";
+        _creatingKorisnik = true;
+        _korisnikHeader = "Novi Korisnik";
+        KorisnikModel = new Korisnik();
+        KorisnikGridModel = new KorisnikGridModel();
+        _showKorisnikEditDialog = true;
+        _creatingKorisnik = true;
+    }
+
+    private void OnCancelClick(MouseEventArgs args)
+    {
+        _editDialog.Hide();
+    }
+
+    private void OnDeleteClick(object context)
+    {
+        _isConfirmDelete = true;
+    }
+
+    private void OnDoubleClick(RecordDoubleClickEventArgs<KorisnikGridModel> args)
+    {
+        _korisnikHeader = $"Detalji - {args.RowData.PunoIme}";
+        _showKorisnikDetailDialog = true;
+        KorisnikModel = UserRepository.GetKorisnikByEmail(args.RowData.EmailAdresa);
+        KorisnikGridModel = args.RowData;
+    }
+
+    private void ShowEditDialog()
+    {
+        SaveButton = "Ažuriraj";
+        _showKorisnikDetailDialog = false;
+        _korisnikHeader = $"Uređivanje - {KorisnikGridModel.PunoIme}";
+        _showKorisnikEditDialog = true;
+        _creatingKorisnik = false;
+    }
+
+    private void ChangeUserRole(int roleId)
+    {
+        KorisnikGridModel.UlogaId = roleId;
+
+        if (roleId == 4 || roleId == 3)
+        {
+            _enabled = true;
+        }
+        else
+        {
+            _enabled = false;
+        }
+    }
+
+    private void ChangeUserSpol(string spol)
+    {
+        KorisnikGridModel.Spol = spol;
+    }
+
+    private void HandleSubmit()
+    {
+        if (SaveButton == "Dodaj")
+        {
+            Uloge uloga = Uloge.Učenik;
+            int razredId = KorisnikGridModel.IdRazred ?? -1;
+
+            switch (KorisnikGridModel.UlogaId)
+            {
+                case 1:
+                    uloga = Uloge.Admin;
+                    break;
+                case 2:
+                    uloga = Uloge.Nastavnik;
+                    break;
+                case 4:
+                    uloga = Uloge.Učenik;
+                    break;
+            }
+
+            UserRepository.CreateKorisnik(new RegisterParameters
+            {
+                Spol = KorisnikGridModel.Spol,
+                Ime = KorisnikGridModel.Ime,
+                Prezime = KorisnikGridModel.Prezime,
+                DoB = KorisnikGridModel.Dob,
+                Email = KorisnikGridModel.EmailAdresa,
+                Password = KorisnikGridModel.Lozinka
+            }, uloga, razredId);
+        }
+        else
+        {
+            Console.WriteLine("Ne radim ništ");
+        }
+
+        _editDialog.Hide();
+        StateHasChanged();
+    }
+
+    private void HandleDelete()
+    {
+        UserRepository.DeleteKorisnik(KorisnikModel);
+        _korisnici = KorisnikGridModel.ToGridModel(UserRepository.GetAllKorisnici(), UserRepository.GetAllUloge(), RazredRepository.GetAllRazredi());
+
+        _isConfirmDelete = false;
+    }
+
+    private void HandleCancelDelete()
+    {
+        _isConfirmDelete = false;
+    }
+}

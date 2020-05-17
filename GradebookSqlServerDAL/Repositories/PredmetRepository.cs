@@ -24,7 +24,7 @@ namespace GradebookSqlServerDAL.Repositories
         {
             var godinaPredmeta = _context.Predmet.First(p => p.IdPredmet == predmetId).GodinaRazreda;
 
-            var razrediGodine = _context.Razred.Where(r => r.GodinaRazreda == godinaPredmeta).ToList();
+            var razrediGodine = _context.Razred.Where(r => r.GodinaRazreda == godinaPredmeta).Include(r => r.Korisnik).ToList();
 
             List<Korisnik> output = new List<Korisnik>();
 
