@@ -91,6 +91,16 @@ namespace GradebookSqlServerDAL.Repositories
             _userManager.DeleteAsync(korisnik.User);
         }
 
+        public void UpdateRazredKorisniku(int korisnikId, int razredId)
+        {
+            var korisnik = _context.Korisnik.First(k => k.IdKorisnik == korisnikId);
+
+            korisnik.IdRazred = razredId;
+
+            _context.Update(korisnik);
+            _context.SaveChanges();
+        }
+
         public int GetNumberOfTeachers()
         {
             return _context.KorisnikUloga.Count(ku =>

@@ -170,12 +170,12 @@
                         <div class="e-btn-group e-round-corner e-field">
                             <input type="radio" id="userRoleAdmin" name="Role" Value="1" @onchange="@(() => ChangeUserRole(1))" />
                             <label class="e-btn" for="userRoleAdmin">Admin</label>
-                            <input type="radio" id="userRoleStudent" name="Role" Value="2" @onchange="@(() => ChangeUserRole(2))" />
-                            <label class="e-btn" for="userRoleStudent">Nastavnik</label>
-                            <input type="radio" id="userRoleStudent" name="Role" Value="3" @onchange="@(() => ChangeUserRole(3))" />
-                            <label class="e-btn" for="userRoleStudent">Razrednik</label>
-                            <input type="radio" id="userRoleNastavnik" name="Role" Value="4" @onchange="@(() => ChangeUserRole(4))" />
-                            <label class="e-btn" for="userRoleNastavnik">Učenik</label>
+                            <input type="radio" id="userRoleTeacher" name="Role" Value="2" @onchange="@(() => ChangeUserRole(2))" />
+                            <label class="e-btn" for="userRoleTeacher">Nastavnik</label>
+                            <input type="radio" id="userRoleClassTeac" name="Role" Value="3" @onchange="@(() => ChangeUserRole(3))" />
+                            <label class="e-btn" for="userRoleClassTeac">Razrednik</label>
+                            <input type="radio" id="userRoleStudent" name="Role" Value="4" @onchange="@(() => ChangeUserRole(4))" />
+                            <label class="e-btn" for="userRoleStudent">Učenik</label>
                         </div>
                     </div>
                     <div class="blood-group">
@@ -259,13 +259,15 @@
     private bool _enabled = true;
     private List<RazredGridModel> _allRazredi;
 
+    private string currentUserEmail;
+
     protected override async Task OnInitializedAsync()
     {
         var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userEmail = auth.User.Identity.Name;
+        currentUserEmail = auth.User.Identity.Name;
 
         _korisnici = KorisnikGridModel.ToGridModel(UserRepository.GetAllKorisnici(), UserRepository.GetAllUloge(), RazredRepository.GetAllRazredi());
-        var currentKorisnik = _korisnici.First(k => k.EmailAdresa == userEmail);
+        var currentKorisnik = _korisnici.First(k => k.EmailAdresa == currentUserEmail);
         _korisnici.Remove(currentKorisnik);
 
         _allRazredi = RazredGridModel.ToGridModel(RazredRepository.GetAllRazredi());
@@ -328,7 +330,7 @@
         KorisnikGridModel.Spol = spol;
     }
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
         if (SaveButton == "Dodaj")
         {
@@ -348,7 +350,7 @@
                     break;
             }
 
-            UserRepository.CreateKorisnik(new RegisterParameters
+            await UserRepository.CreateKorisnik(new RegisterParameters
             {
                 Spol = KorisnikGridModel.Spol,
                 Ime = KorisnikGridModel.Ime,
@@ -357,10 +359,20 @@
                 Email = KorisnikGridModel.EmailAdresa,
                 Password = KorisnikGridModel.Lozinka
             }, uloga, razredId);
+
+            _korisnici = KorisnikGridModel.ToGridModel(UserRepository.GetAllKorisnici(), UserRepository.GetAllUloge(), RazredRepository.GetAllRazredi());
+            var currentKorisnik = _korisnici.First(k => k.EmailAdresa == currentUserEmail);
+            _korisnici.Remove(currentKorisnik);
         }
         else
         {
-            Console.WriteLine("Ne radim ništ");
+            if (KorisnikGridModel.IdRazred.HasValue && KorisnikGridModel.IdKorisnik.HasValue)
+            {
+                UserRepository.UpdateRazredKorisniku(KorisnikGridModel.IdKorisnik.Value, KorisnikGridModel.IdRazred.Value);
+                _korisnici = KorisnikGridModel.ToGridModel(UserRepository.GetAllKorisnici(), UserRepository.GetAllUloge(), RazredRepository.GetAllRazredi());
+                var currentKorisnik = _korisnici.First(k => k.EmailAdresa == currentUserEmail);
+                _korisnici.Remove(currentKorisnik);
+            }
         }
 
         _editDialog.Hide();

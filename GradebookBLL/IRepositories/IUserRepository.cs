@@ -15,6 +15,7 @@ namespace GradebookBLL.IRepositories
         List<Korisnik> GetAllKorisnici();
         Korisnik GetKorisnikByEmail(string email);
         void DeleteKorisnik(Korisnik korisnik);
+        void UpdateRazredKorisniku(int korisnikId, int razredId);
 
         int GetNumberOfTeachers();
         int GetNumberOfStudents();

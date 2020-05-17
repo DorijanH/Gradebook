@@ -48,7 +48,7 @@
             }
             else
             {
-                <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum.Date</b></div>
+                <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum.ToShortDateString()</b></div>
                                    
                 <div class="provjera-detail-wrapper">
                     <div class="patient-operations">
@@ -279,6 +279,8 @@
     private void OnDoubleClickOcjena(RecordDoubleClickEventArgs<OcjenaGridModel> args)
     {
         OcjenaEditModel = ProvjeraRepository.GetOcjena(args.RowData.OcjenaId);
+
+        _allUceniciProvjere = KorisnikGridModel.ToGridModel(PredmetRepository.GetAllUceniciPredmeta(_selectedProvjera.PredmetId));
 
         _ocjenaHeader = "Uređivanje ocjene";
         OcjenaSaveButton = "Ažuriraj";
