@@ -27,14 +27,19 @@
     else
     {
         <div class="patient-display">
-            <SfGrid DataSource="@_provjere">
+            <SfGrid DataSource="@_provjere" AllowSorting="true" AllowPaging="true">
                 <GridEvents RowSelected="RowSelectHandler" OnRecordDoubleClick="@OnDoubleClick" TValue="ProvjeraGridModel"></GridEvents>
                 <GridColumns>
-                    <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="100" Format="dd.MM.yyyy H:mm"></GridColumn>
-                    <GridColumn Field="Naziv" HeaderText="Naziv" TextAlign="@TextAlign.Center" Width="50"></GridColumn>
+                    <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="15%" Format="dd.MM.yyyy"></GridColumn>
+                    <GridColumn Field="Naziv" HeaderText="Naziv" TextAlign="@TextAlign.Center" Width="15%"></GridColumn>
                     <!--Dodaj ime onoga tko je postavio provjeru, ako možeš-->
-                    <GridColumn Field="Predmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="100"></GridColumn>
-                    <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="250"></GridColumn>
+                    <GridColumn Field="Predmet" HeaderText="Predmet" TextAlign="@TextAlign.Center" Width="15%"></GridColumn>
+                    <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="45%"></GridColumn>
+                    <GridColumn TextAlign="@TextAlign.Center" Width="5%">
+                        <Template>
+                            <button class="e-btn btn-danger" @onclick="@(() => OnDeleteClick(context))"><i class="fas fa-trash"></i></button>
+                        </Template>
+                    </GridColumn>
                 </GridColumns>
             </SfGrid>
             @if (_selectedProvjera == null)
@@ -198,15 +203,8 @@
 
     protected override void OnInitialized()
     {
-        _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
-        {
-            ProvjeraId = p.IdProvjera,
-            PredmetId = p.IdPredmet.Value,
-            Predmet = p.IdPredmetNavigation.Naziv,
-            Datum = p.Datum.Value,
-            Naziv = p.Naziv,
-            Opis = p.Opis
-        }).ToList();
+        _provjere = ProvjeraGridModel.ToGridModel(ProvjeraRepository.GetAllProvjere());
+
         _allPredmeti = PredmetGridModel.ToGridModel(PredmetRepository.GetAllPredmeti());
     }
 
@@ -241,6 +239,20 @@
         }
     }
 
+    private void OnDeleteClick(object context)
+    {
+        if (context is ProvjeraGridModel)
+        {
+            _whatIsDeleting = "provjeru";
+        }
+        else if (context is OcjenaGridModel)
+        {
+            _whatIsDeleting = "ocjenu";
+        }
+
+        _isConfirmDelete = true;
+    }
+
     public void RowSelectHandler(RowSelectEventArgs<ProvjeraGridModel> args)
     {
         _selectedProvjera = args.Data;
@@ -268,32 +280,18 @@
         if (SaveButton == "Save")
         {
             ProvjeraRepository.AddProvjera(ProvjeraEditModel);
-            _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
-            {
-                ProvjeraId = p.IdProvjera,
-                PredmetId = p.IdPredmet.Value,
-                Datum = p.Datum.Value,
-                Naziv = p.Naziv,
-                Opis = p.Opis
-            }).ToList();
+            _provjere = ProvjeraGridModel.ToGridModel(ProvjeraRepository.GetAllProvjere());
         }
         else
         {
             ProvjeraRepository.UpdateProvjera(ProvjeraEditModel);
-            _provjere = ProvjeraRepository.GetAllProvjere().Select(p => new ProvjeraGridModel
-            {
-                ProvjeraId = p.IdProvjera,
-                PredmetId = p.IdPredmet.Value,
-                Datum = p.Datum.Value,
-                Naziv = p.Naziv,
-                Opis = p.Opis
-            }).ToList();
+            _provjere = ProvjeraGridModel.ToGridModel(ProvjeraRepository.GetAllProvjere());
         }
 
         _dialogObj.Hide();
     }
 
-    private void HandleDelete()
+    private void HandleDelete(object context)
     {
 
     }
@@ -310,15 +308,7 @@
             ProvjeraRepository.AddOcjena(OcjenaEditModel);
             if (_selectedProvjera != null)
             {
-                _ocjeneSelectedProvjere = ProvjeraRepository
-                    .GetOcjeneForProvjera(_selectedProvjera.ProvjeraId)
-                    .Select(o => new OcjenaGridModel
-                    {
-                        UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
-                        Bilješka = o.Bilješka,
-                        Ocjena1 = o.Ocjena1,
-                        OstvareniBodovi = o.OstvareniBodovi ?? 0
-                    }).ToList();
+                _ocjeneSelectedProvjere = OcjenaGridModel.ToGridModel(ProvjeraRepository.GetOcjeneForProvjera(_selectedProvjera.ProvjeraId));
             }
         }
         else
@@ -326,15 +316,7 @@
             ProvjeraRepository.UpdateOcjena(OcjenaEditModel);
             if (_selectedProvjera != null)
             {
-                _ocjeneSelectedProvjere = ProvjeraRepository
-                    .GetOcjeneForProvjera(_selectedProvjera.ProvjeraId)
-                    .Select(o => new OcjenaGridModel
-                    {
-                        UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
-                        Bilješka = o.Bilješka,
-                        Ocjena1 = o.Ocjena1,
-                        OstvareniBodovi = o.OstvareniBodovi ?? 0
-                    }).ToList();
+                _ocjeneSelectedProvjere = OcjenaGridModel.ToGridModel(ProvjeraRepository.GetOcjeneForProvjera(_selectedProvjera.ProvjeraId));
             }
         }
     }
