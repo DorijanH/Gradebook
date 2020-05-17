@@ -43,5 +43,22 @@ namespace GradebookSqlServerDAL.Repositories
             _context.Update(provjera);
             _context.SaveChanges();
         }
+
+        public void AddOcjena(Ocjena newOcjena)
+        {
+            _context.Add(newOcjena);
+            _context.SaveChanges();
+        }
+
+        public List<Ocjena> GetOcjeneForProvjera(int provjeraId)
+        {
+            return _context.Ocjena.Where(o => o.IdProvjera == provjeraId).Include(o => o.IdUčenikNavigation).ToList();
+        }
+
+        public void UpdateOcjena(Ocjena ocjena)
+        {
+            _context.Update(ocjena);
+            _context.SaveChanges();
+        }
     }
 }

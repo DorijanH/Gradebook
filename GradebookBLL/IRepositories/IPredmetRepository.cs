@@ -6,5 +6,6 @@ namespace GradebookBLL.IRepositories
     public interface IPredmetRepository
     {
         List<Predmet> GetAllPredmeti();
+        List<Korisnik> GetAllUceniciPredmeta(int predmetId);
     }
 }

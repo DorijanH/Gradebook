@@ -2,6 +2,7 @@
 using System.Linq;
 using GradebookBLL.DomainModels;
 using GradebookBLL.IRepositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GradebookSqlServerDAL.Repositories
 {
@@ -17,6 +18,22 @@ namespace GradebookSqlServerDAL.Repositories
         public List<Predmet> GetAllPredmeti()
         {
             return _context.Predmet.ToList();
+        }
+
+        public List<Korisnik> GetAllUceniciPredmeta(int predmetId)
+        {
+            var godinaPredmeta = _context.Predmet.First(p => p.IdPredmet == predmetId).GodinaRazreda;
+
+            var razrediGodine = _context.Razred.Where(r => r.GodinaRazreda == godinaPredmeta).ToList();
+
+            List<Korisnik> output = new List<Korisnik>();
+
+            foreach(var razred in razrediGodine)
+            {
+                output.AddRange(razred.Korisnik.ToList());
+            }
+
+            return output;
         }
     }
 }

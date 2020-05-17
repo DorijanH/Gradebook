@@ -37,14 +37,33 @@
                     <GridColumn Field="Opis" HeaderText="Opis" TextAlign="@TextAlign.Center" Width="250"></GridColumn>
                 </GridColumns>
             </SfGrid>
-            <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum</b></div>
-            <SfGrid DataSource="@_ocjeneSelectedProvjere">
-                <GridColumns>                <GridColumn Field="UcenikIme" HeaderText="Ime Učenika" Width="110"></GridColumn>
-                    <GridColumn Field="OstvareniBodovi" HeaderText="Ostvareni Bodovi" Width="50"></GridColumn>
-                    <GridColumn Field="Ocjena1" HeaderText="Ocjena" Width="50"></GridColumn>
-                    <GridColumn Field="Bilješka" HeaderText="Bilješka" Width="200"></GridColumn>
-                </GridColumns>
-            </SfGrid>
+            @if (_selectedProvjera == null)
+            {
+                <div class="e-statustext">Niste odabrali niti jednu provjeru.</div>
+            }
+            else
+            {
+                <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum</b></div>
+                @if (_ocjeneSelectedProvjere.Count == 0)
+                {
+                    <p>Odabrana provjera još nema upisanih ocjena.</p>
+                    <div class="patient-operations">
+                        <SfButton CssClass="e-normal add-details" @onclick="@OnAddOcjena" IsPrimary="true">Dodaj Ocjenu Za Provjeru</SfButton>
+                    </div>
+
+                }
+                else
+                {
+                    <SfGrid DataSource="@_ocjeneSelectedProvjere">
+                        <GridColumns>
+                            <GridColumn Field="UcenikIme" HeaderText="Ime Učenika" Width="110"></GridColumn>
+                            <GridColumn Field="OstvareniBodovi" HeaderText="Ostvareni Bodovi" Width="50"></GridColumn>
+                            <GridColumn Field="Ocjena1" HeaderText="Ocjena" Width="50"></GridColumn>
+                            <GridColumn Field="Bilješka" HeaderText="Bilješka" Width="200"></GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                }
+            }
         </div>
     }
 </div>
@@ -52,20 +71,20 @@
 @if (_showProvjeraEditDialog)
 {
     <SfDialog @ref="@_dialogObj" Target="body" Width="400px" CssClass="new-patient-dialog" IsModal="true" @bind-Visible="@_showProvjeraEditDialog"
-               ShowCloseIcon="true" Header="@_provjeraHeader" AnimationSettings="@_dialogAnimation">
+              ShowCloseIcon="true" Header="@_provjeraHeader" AnimationSettings="@_dialogAnimation">
         <ChildContent>
-            <EditForm Model="@ProvjeraEditModel" OnValidSubmit="@HandleSubmit">
-                <DataAnnotationsValidator/>
-                
+            <EditForm Model="@ProvjeraEditModel" OnValidSubmit="@HandleSubmitProvjera">
+                <DataAnnotationsValidator />
+
                 <div class="field-container">
                     <SfTextBox CssClass="patient-name e-field" Placeholder="Naziv Provjere" FloatLabelType="@FloatLabelType.Always" @bind-Value="@ProvjeraEditModel.Naziv"></SfTextBox>
-                    <ValidationMessage For="@(() => ProvjeraEditModel.Naziv)"/>
+                    <ValidationMessage For="@(() => ProvjeraEditModel.Naziv)" />
                 </div>
                 <div class="field-container">
                     <SfDropDownList FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Iz Predmeta" @bind-Value="@ProvjeraEditModel.IdPredmet" DataSource="@_allPredmeti">
                         <DropDownListFieldSettings Text="Naziv" Value="IdPredmet"></DropDownListFieldSettings>
                     </SfDropDownList>
-                    <ValidationMessage For="@(() => ProvjeraEditModel.IdPredmet)"/>
+                    <ValidationMessage For="@(() => ProvjeraEditModel.IdPredmet)" />
                 </div>
                 <div class="field-container">
                     <SfDatePicker CssClass="e-field" Placeholder="Datum Provedbe Provjere" @bind-Value="@ProvjeraEditModel.Datum" Min="@DateTime.Now.AddDays(2)"
@@ -87,6 +106,49 @@
     </SfDialog>
 }
 
+@if (_showOcjenaEditDialog)
+{
+    <SfDialog @ref="@_dialog2Obj" Target="body" Width="400px" CssClass="new-patient-dialog" IsModal="true" @bind-Visible="@_showOcjenaEditDialog"
+              ShowCloseIcon="true" Header="@_ocjenaHeader" AnimationSettings="@_dialogAnimation">
+        <ChildContent>
+            <EditForm Model="@OcjenaEditModel" OnValidSubmit="@HandleSubmitOcjena">
+                <DataAnnotationsValidator />
+
+                <div class="field-container">
+                    <SfDropDownList FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Iz Provjere" @bind-Value="@OcjenaEditModel.IdProvjera" DataSource="@_provjere">
+                        <DropDownListFieldSettings Text="Naziv" Value="IdProvjera"></DropDownListFieldSettings>
+                    </SfDropDownList>
+                    <ValidationMessage For="@(() => OcjenaEditModel.IdProvjera)" />
+                </div>
+                <div class="field-container">
+                    <SfDropDownList FloatLabelType="@FloatLabelType.Always" CssClass="e-field" Placeholder="Učenik" @bind-Value="@OcjenaEditModel.IdUčenik" DataSource="@_allUceniciProvjere">
+                        <DropDownListFieldSettings Text="PunoIme" Value="IdKorisnik"></DropDownListFieldSettings>
+                    </SfDropDownList>
+                    <ValidationMessage For="@(() => OcjenaEditModel.IdUčenik)" />
+                </div>
+                <div class="field-container">
+                    <SfNumericTextBox TValue="int?" Min=0 Max=100 Step=1 CssClass="e-field" Placeholder="Ostvareni Bodovi" FloatLabelType="@FloatLabelType.Always" @bind-Value="@OcjenaEditModel.OstvareniBodovi"></SfNumericTextBox>
+                    <ValidationMessage For="@(() => OcjenaEditModel.OstvareniBodovi)" />
+                </div>
+                <div class="field-container">
+                    <SfNumericTextBox TValue="int" Min=0 Max=5 Step=1 CssClass="e-field" Placeholder="Ocjena" FloatLabelType="@FloatLabelType.Always" @bind-Value="@OcjenaEditModel.Ocjena1"></SfNumericTextBox>
+                    <ValidationMessage For="@(() => OcjenaEditModel.Ocjena1)" />
+                </div>
+                <div class="field-container">
+                    <SfTextBox Multiline="true" CssClass="e-field" Placeholder="Bilješka" FloatLabelType="@FloatLabelType.Always" @bind-Value="@OcjenaEditModel.Bilješka"></SfTextBox>
+                    <ValidationMessage For="@(() => OcjenaEditModel.Bilješka)" />
+                </div>
+                <div class="e-footer-content">
+                    <div class="field-container">
+                        <button type="button" class="e-btn e-normal" @onclick="@OnCancelClick">Cancel</button>
+                        <button type="submit" class="e-btn e-normal e-primary">@OcjenaSaveButton</button>
+                    </div>
+                </div>
+            </EditForm>
+        </ChildContent>
+    </SfDialog>
+}
+
 <!--POSTAVI DELETE GUMB NEGDJE U TABLICI-->
 @if (_isConfirmDelete)
 {
@@ -96,7 +158,7 @@
                 <span>Potvrda brisanja</span>
             </Header>
             <Content>
-                Jeste li sigurni da želite obrisati ovu provjeru?
+                Jeste li sigurni da želite obrisati ovu @_whatIsDeleting?
             </Content>
         </DialogTemplates>
         <DialogButtons>
@@ -113,13 +175,21 @@
     private string SaveButton { get; set; } = "Save";
     private bool _showProvjeraEditDialog;
     private SfDialog _dialogObj;
-    private DialogAnimationSettings _dialogAnimation = new DialogAnimationSettings {Effect = DialogEffect.Zoom};
+    private DialogAnimationSettings _dialogAnimation = new DialogAnimationSettings { Effect = DialogEffect.Zoom };
     private string _provjeraHeader;
     private List<Predmet> _allPredmeti = new List<Predmet>();
 
+    public Ocjena OcjenaEditModel { get; set; } = new Ocjena();
+    private string OcjenaSaveButton { get; set; } = "Save";
+    private bool _showOcjenaEditDialog;
+    private SfDialog _dialog2Obj;
+    private string _ocjenaHeader;
+    private List<Korisnik> _allUceniciProvjere = new List<Korisnik>();
+
     private bool _isConfirmDelete;
-    private ButtonModel _deleteBtn = new ButtonModel {Content = "Da", IsPrimary = true};
-    private ButtonModel _cancelBtn = new ButtonModel { Content = "Ups, ne"};
+    private string _whatIsDeleting;
+    private ButtonModel _deleteBtn = new ButtonModel { Content = "Da", IsPrimary = true };
+    private ButtonModel _cancelBtn = new ButtonModel { Content = "Ups, ne" };
 
     private List<Provjera> _provjere;
     private Provjera _selectedProvjera;
@@ -134,14 +204,32 @@
     private void OnAddProvjera(MouseEventArgs args)
     {
         SaveButton = "Save";
-        _provjeraHeader = "Nova provjera";
+        _provjeraHeader = "Nova Provjera";
         ProvjeraEditModel = new Provjera();
         _showProvjeraEditDialog = true;
     }
 
+    private void OnAddOcjena(MouseEventArgs args)
+    {
+        OcjenaSaveButton = "Save";
+        _ocjenaHeader = "Nova Ocjena";
+        OcjenaEditModel = new Ocjena { IdProvjera = _selectedProvjera.IdProvjera };
+
+        _allUceniciProvjere = PredmetRepository.GetAllUceniciPredmeta(_selectedProvjera.IdPredmet);
+
+        _showOcjenaEditDialog = true;
+    }
+
     private void OnCancelClick(MouseEventArgs args)
     {
-        _dialogObj.Hide();
+        if (_showProvjeraEditDialog)
+        {
+            _dialogObj.Hide();
+        }
+        else
+        {
+            _dialog2Obj.Hide();
+        }
     }
 
     public void RowSelectHandler(RowSelectEventArgs<Provjera> args)
@@ -160,23 +248,29 @@
     {
         ProvjeraEditModel = new Provjera
         {
-            Ocjena = args.RowData.Ocjena, Datum = args.RowData.Datum, IdPredmet = args.RowData.IdPredmet, IdProvjera = args.RowData.IdProvjera,
-            Naziv = args.RowData.Naziv, Opis = args.RowData.Opis
+            Ocjena = args.RowData.Ocjena,
+            Datum = args.RowData.Datum,
+            IdPredmet = args.RowData.IdPredmet,
+            IdProvjera = args.RowData.IdProvjera,
+            Naziv = args.RowData.Naziv,
+            Opis = args.RowData.Opis
         };
         _provjeraHeader = "Uređivanje provjere";
         SaveButton = "Ažuriraj";
         _showProvjeraEditDialog = true;
     }
 
-    private void HandleSubmit()
+    private void HandleSubmitProvjera()
     {
         if (SaveButton == "Save")
         {
             ProvjeraRepository.AddProvjera(ProvjeraEditModel);
+            _provjere = ProvjeraRepository.GetAllProvjere();
         }
         else
         {
             ProvjeraRepository.UpdateProvjera(ProvjeraEditModel);
+            _provjere = ProvjeraRepository.GetAllProvjere();
         }
 
         _dialogObj.Hide();
@@ -190,6 +284,42 @@
     private void HandleCancelDelete()
     {
         _isConfirmDelete = false;
+    }
+
+    private void HandleSubmitOcjena()
+    {
+        if (OcjenaSaveButton == "Save")
+        {
+            ProvjeraRepository.AddOcjena(OcjenaEditModel);
+            if (_selectedProvjera != null)
+            {
+                _ocjeneSelectedProvjere = ProvjeraRepository
+                    .GetOcjeneForProvjera(_selectedProvjera.IdProvjera)
+                    .Select(o => new OcjenaGridModel
+                    {
+                        UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
+                        Bilješka = o.Bilješka,
+                        Ocjena1 = o.Ocjena1,
+                        OstvareniBodovi = o.OstvareniBodovi ?? 0
+                    }).ToList();
+            }
+        }
+        else
+        {
+            ProvjeraRepository.UpdateOcjena(OcjenaEditModel);
+            if (_selectedProvjera != null)
+            {
+                _ocjeneSelectedProvjere = ProvjeraRepository
+                    .GetOcjeneForProvjera(_selectedProvjera.IdProvjera)
+                    .Select(o => new OcjenaGridModel
+                    {
+                        UcenikIme = o.IdUčenikNavigation.Ime + o.IdUčenikNavigation.Prezime,
+                        Bilješka = o.Bilješka,
+                        Ocjena1 = o.Ocjena1,
+                        OstvareniBodovi = o.OstvareniBodovi ?? 0
+                    }).ToList();
+            }
+        }
     }
 
 }
