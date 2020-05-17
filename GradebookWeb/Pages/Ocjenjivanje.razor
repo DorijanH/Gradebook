@@ -27,7 +27,7 @@
     else
     {
         <div class="patient-display">
-            <SfGrid DataSource="@_provjere" AllowSorting="true" AllowPaging="true">
+            <SfGrid SelectedRowIndex="0" DataSource="@_provjere" AllowSorting="true" AllowPaging="true">
                 <GridEvents RowSelected="RowSelectHandler" OnRecordDoubleClick="@OnDoubleClick" TValue="ProvjeraGridModel"></GridEvents>
                 <GridColumns>
                     <GridColumn Field="Datum" HeaderText="Vrijeme" TextAlign="@TextAlign.Left" Width="15%" Format="dd.MM.yyyy"></GridColumn>
@@ -48,7 +48,7 @@
             }
             else
             {
-                <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum</b></div>
+                <div class="e-statustext">Prikaz ocjena za provjeru: <b>@_selectedProvjera.Naziv - @_selectedProvjera.Datum.Date</b></div>
                 @if (_ocjeneSelectedProvjere.Count == 0)
                 {
                     <p>Odabrana provjera još nema upisanih ocjena.</p>
@@ -157,7 +157,7 @@
 <!--POSTAVI DELETE GUMB NEGDJE U TABLICI-->
 @if (_isConfirmDelete)
 {
-    <SfDialog @bind-Visible="@_isConfirmDelete" CssClass="confirm-dialog" Width="auto" IsModal="true" ShowCloseIcon="true">
+    <SfDialog @bind-Visible="@_isConfirmDelete" CssClass="e-confirm-dialog" Width="auto" IsModal="true" ShowCloseIcon="true">
         <DialogTemplates>
             <Header>
                 <span>Potvrda brisanja</span>
@@ -199,6 +199,7 @@
     private List<ProvjeraGridModel> _provjere = new List<ProvjeraGridModel>();
     private ProvjeraGridModel _selectedProvjera;
     private List<OcjenaGridModel> _ocjeneSelectedProvjere;
+    private OcjenaGridModel _selectedOcjena;
 
 
     protected override void OnInitialized()
@@ -291,9 +292,20 @@
         _dialogObj.Hide();
     }
 
-    private void HandleDelete(object context)
+    private void HandleDelete()
     {
+        if (_whatIsDeleting == "provjeru")
+        {
+            ProvjeraRepository.DeleteProvjeraById(_selectedProvjera.ProvjeraId);
+            _provjere = ProvjeraGridModel.ToGridModel(ProvjeraRepository.GetAllProvjere());
+        }
+        else if (_whatIsDeleting == "ocjenu")
+        {
+            ProvjeraRepository.DeleteOcjenaById(_selectedOcjena.OcjenaId);
+            _ocjeneSelectedProvjere = OcjenaGridModel.ToGridModel(ProvjeraRepository.GetOcjeneForProvjera(_selectedProvjera.ProvjeraId));
+        }
 
+        _isConfirmDelete = false;
     }
 
     private void HandleCancelDelete()

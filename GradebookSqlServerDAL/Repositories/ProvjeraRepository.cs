@@ -44,6 +44,12 @@ namespace GradebookSqlServerDAL.Repositories
             _context.SaveChanges();
         }
 
+        public void DeleteProvjeraById(int provjeraId)
+        {
+            _context.Remove(_context.Provjera.First(p => p.IdProvjera == provjeraId));
+            _context.SaveChanges();
+        }
+
         public void AddOcjena(Ocjena newOcjena)
         {
             _context.Add(newOcjena);
@@ -58,6 +64,12 @@ namespace GradebookSqlServerDAL.Repositories
         public void UpdateOcjena(Ocjena ocjena)
         {
             _context.Update(ocjena);
+            _context.SaveChanges();
+        }
+
+        public void DeleteOcjenaById(int ocjenaId)
+        {
+            _context.Remove(_context.Ocjena.First(o => o.IdOcjena == ocjenaId));
             _context.SaveChanges();
         }
 

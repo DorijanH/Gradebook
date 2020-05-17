@@ -11,9 +11,11 @@ namespace GradebookBLL.IRepositories
 
         void AddProvjera(Provjera newProvjera);
         void UpdateProvjera(Provjera provjera);
+        void DeleteProvjeraById(int provjeraId);
 
         void AddOcjena(Ocjena newOcjena);
         List<Ocjena> GetOcjeneForProvjera(int provjeraId);
         void UpdateOcjena(Ocjena ocjena);
+        void DeleteOcjenaById(int ocjenaId);
     }
 }

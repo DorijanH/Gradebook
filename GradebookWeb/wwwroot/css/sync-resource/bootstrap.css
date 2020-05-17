@@ -1407,7 +1407,7 @@
         }
 
         .e-btn.e-flat.e-primary, .e-css.e-btn.e-flat.e-primary {
-            background-color: #7575ff;
+            background-color: #0d3a5e;
             border-color: #4242ff;
             color: #fff
         }
@@ -1626,8 +1626,8 @@
 
         .e-btn.e-outline.e-primary, .e-css.e-btn.e-outline.e-primary {
             background-color: transparent;
-            border-color: #7575ff;
-            color: #7575ff
+            border-color: #0d3a5e;
+            color: #0d3a5e
         }
 
             .e-btn.e-outline.e-primary:hover, .e-css.e-btn.e-outline.e-primary:hover {
@@ -2317,7 +2317,7 @@
 }
 
     .e-pager div.e-icons {
-        color: #7575ff
+        color: #0d3a5e
     }
 
         .e-pager div.e-icons.e-disable {
@@ -2335,7 +2335,7 @@
     }
 
     .e-pager .e-spacing {
-        color: #7575ff;
+        color: #0d3a5e;
         opacity: 1
     }
 
@@ -7849,7 +7849,7 @@ ejs-sidebar {
         }
 
     .e-dashboardlayout.e-control .e-panel:active {
-        border: 1px #7575ff solid
+        border: 1px #0d3a5e solid
     }
 
     .e-dashboardlayout.e-control .e-panel .e-panel-container .e-resize {
@@ -8706,7 +8706,7 @@ ejs-sidebar {
 
         .e-grid .e-gridcontent .e-lastrow-dragborder, .e-grid .e-gridheader .e-firstrow-dragborder, .e-grid.e-rtl .e-gridcontent .e-lastrow-dragborder, .e-grid.e-rtl .e-gridheader .e-firstrow-dragborder {
             bottom: 0;
-            background-color: #7575ff;
+            background-color: #0d3a5e;
             height: 2px;
             position: absolute;
             z-index: 10
@@ -11150,7 +11150,7 @@ ejs-sidebar {
     }
 
 .e-dropitemscount {
-    background-color: #7575ff;
+    background-color: #0d3a5e;
     color: #fff
 }
 
