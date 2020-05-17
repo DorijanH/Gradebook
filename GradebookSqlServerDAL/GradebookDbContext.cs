@@ -1,4 +1,5 @@
-﻿using GradebookBLL.DomainModels;
+﻿using System;
+using GradebookBLL.DomainModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -242,6 +243,52 @@ namespace GradebookSqlServerDAL
                 new Uloga {IdUloga = 2, NazivUloga = "Nastavnik"},
                 new Uloga {IdUloga = 3, NazivUloga = "Razrednik"},
                 new Uloga {IdUloga = 4, NazivUloga = "Učenik"});
+
+            modelBuilder.Entity<GodinaRazreda>().HasData(
+                new GodinaRazreda {IdGodRazreda = 1, Godina = "1"},
+                new GodinaRazreda {IdGodRazreda = 2, Godina = "2"},
+                new GodinaRazreda {IdGodRazreda = 3, Godina = "3"},
+                new GodinaRazreda {IdGodRazreda = 4, Godina = "4"}
+            );
+
+            modelBuilder.Entity<KriterijOcjenjivanja>().HasData(
+                new KriterijOcjenjivanja { IdKriterij = 1, Kriterij1 = "Teorija", Kriterij2 = "Zadaci", Kriterij3 = "Zadaća", Kriterij4 = "Labosi" },
+                new KriterijOcjenjivanja { IdKriterij = 2, Kriterij1 = "Aktivnost", Kriterij2 = "Zalaganje", Kriterij3 = "Prisutnost", Kriterij4 = "Seminar" },
+                new KriterijOcjenjivanja { IdKriterij = 3, Kriterij1 = "Praksa", Kriterij2 = "Usmeno" }
+                );
+
+            modelBuilder.Entity<Predmet>().HasData(
+                new Predmet { IdPredmet = 1, Naziv = "Matematika 1", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 1 },
+                new Predmet { IdPredmet = 2, Naziv = "Matematika 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 3, Naziv = "Matematika 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 4, Naziv = "Matematika 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 },
+                new Predmet { IdPredmet = 5, Naziv = "Povijest 1", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 1 },
+                new Predmet { IdPredmet = 6, Naziv = "Povijest 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 7, Naziv = "Povijest 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 8, Naziv = "Povijest 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 },
+                new Predmet { IdPredmet = 9, Naziv = "Biologija 1", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 1 },
+                new Predmet { IdPredmet = 10, Naziv = "Biologija 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 11, Naziv = "Biologija 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 12, Naziv = "Biologija 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 },
+                new Predmet { IdPredmet = 13, Naziv = "Geografija 1", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 1 },
+                new Predmet { IdPredmet = 14, Naziv = "Geografija 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 15, Naziv = "Geografija 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 16, Naziv = "Geografija 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 },
+                new Predmet { IdPredmet = 17, Naziv = "Psihologija 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 18, Naziv = "Psihologija 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 19, Naziv = "Logika 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 20, Naziv = "Filozofija 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 },
+                new Predmet { IdPredmet = 21, Naziv = "Fizika 1", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 1 },
+                new Predmet { IdPredmet = 22, Naziv = "Fizika 2", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 2 },
+                new Predmet { IdPredmet = 23, Naziv = "Fizika 3", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 3 },
+                new Predmet { IdPredmet = 24, Naziv = "Fizika 4", Opis = "Opis nastavnog plana i programa", GodinaRazreda = 4 }
+                );
+
+            modelBuilder.Entity<Provjera>().HasData(
+                new Provjera { IdProvjera = 1, Naziv = "Kvadratne jednadžbe", IdPredmet = 1, Datum = new DateTime(2020, 5, 28, 13, 30, 0), Opis = "U provjeri ćemo provjeravati znanje kvadratnih jednadžbi. Provjera će se sastojati od 10 zadataka i nositi 50 bodova"},
+                new Provjera { IdProvjera = 2, Naziv = "Njihala, valovi i zvuk", IdPredmet = 23, Datum = new DateTime(2020, 5, 19, 9, 0, 0), Opis = "Pisat ćemo sve što smo radili o njihalima, valovima i zvukovima. Uključujući i Dopplerov učinak. Sretno svima!"},
+                new Provjera { IdProvjera = 3, Naziv = "Drevni Egipat", IdPredmet = 5, Datum = new DateTime(2020, 5, 24, 8, 30, 0), Opis = "Pišemo provjeru iz cjelokupnog gradiva koji se odnosi na stari Egipat."}
+                );
         }
     }
 }

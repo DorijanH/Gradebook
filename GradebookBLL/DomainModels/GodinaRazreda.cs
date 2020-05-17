@@ -11,7 +11,7 @@ namespace GradebookBLL.DomainModels
         }
 
         public int IdGodRazreda { get; set; }
-        public short? BrojGodine { get; set; }
+        public string Godina { get; set; }
 
         public virtual ICollection<Predmet> Predmet { get; set; }
         public virtual ICollection<Razred> Razred { get; set; }
