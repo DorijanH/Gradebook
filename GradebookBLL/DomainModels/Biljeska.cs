@@ -2,7 +2,7 @@
 
 namespace GradebookBLL.DomainModels
 {
-    public partial class Bilješka
+    public partial class Biljeska
     {
         public int IdBilješka { get; set; }
         public string Opis { get; set; }

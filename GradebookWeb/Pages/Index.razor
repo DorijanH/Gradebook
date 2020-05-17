@@ -72,11 +72,11 @@
         <div class="col-lg-4 col-md-4 col-sm-4 list-display" style="padding-right: 0;">
             <div class="recent-activity">
                 <SfListView Height="100%" Width="100%" DataSource="@_bilješke" ShowHeader="true" CssClass="activity-template" HeaderTitle="Nedavne Bilješke">
-                    <ListViewTemplates TValue="Bilješka">
+                    <ListViewTemplates TValue="Biljeska">
                         <Template>
                             <div class="activity-container bilješka">
                                 @{
-                                    var bilješka = (context as Bilješka);
+                                    var bilješka = (context as Biljeska);
                                     var imeKorisnik = bilješka.ZabilježioKorisnikNavigation.Ime;
                                     var prezimeKorisnik = bilješka.ZabilježioKorisnikNavigation.Prezime;
                                     var imeUčenika = bilješka.IdUčenikNavigation.Ime;
@@ -102,7 +102,7 @@
     private int _classroomCount;
 
     private List<Provjera> _provjere = new List<Provjera>();
-    private List<Bilješka> _bilješke = new List<Bilješka>();
+    private List<Biljeska> _bilješke = new List<Biljeska>();
 
     protected override void OnInitialized()
     {

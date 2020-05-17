@@ -14,7 +14,7 @@ namespace GradebookSqlServerDAL.Repositories
             _context = context;
         }
 
-        public List<Bilješka> GetAllBilješke()
+        public List<Biljeska> GetAllBilješke()
         {
             return _context.Bilješka.ToList();
         }

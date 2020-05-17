@@ -9,7 +9,7 @@ namespace GradebookSqlServerDAL
     {
         public GradebookDbContext(DbContextOptions<GradebookDbContext> options) : base(options) { }
 
-        public virtual DbSet<Bilješka> Bilješka { get; set; }
+        public virtual DbSet<Biljeska> Bilješka { get; set; }
         public virtual DbSet<GodinaRazreda> GodinaRazreda { get; set; }
         public virtual DbSet<Korisnik> Korisnik { get; set; }
         public virtual DbSet<KorisnikUloga> KorisnikUloga { get; set; }
@@ -25,7 +25,7 @@ namespace GradebookSqlServerDAL
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Bilješka>(entity =>
+            modelBuilder.Entity<Biljeska>(entity =>
             {
                 entity.HasKey(e => e.IdBilješka)
                     .HasName("PK__Bilješka__516F1AAA586134E9");
@@ -158,7 +158,7 @@ namespace GradebookSqlServerDAL
                 entity.HasOne(d => d.IdProvjeraNavigation)
                     .WithMany(p => p.Ocjena)
                     .HasForeignKey(d => d.IdProvjera)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__Ocjena__IdProvje__60A75C0F");
 
                 entity.HasOne(d => d.IdUčenikNavigation)

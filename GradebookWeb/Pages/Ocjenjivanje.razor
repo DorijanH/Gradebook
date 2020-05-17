@@ -52,7 +52,7 @@
                                    
                 <div class="provjera-detail-wrapper">
                     <div class="patient-operations">
-                        <SfButton CssClass="e-normal add-details" @onclick="@OnAddOcjena" IsPrimary="true">Dodaj Ocjenu Za Provjeru</SfButton>
+                        <SfButton Disabled="@_disabled" CssClass="e-normal add-details" @onclick="@OnAddOcjena" IsPrimary="true">Dodaj Ocjenu Za Provjeru</SfButton>
                     </div>
                 </div>
                 @if (_ocjeneSelectedProvjere.Count == 0)
@@ -206,6 +206,8 @@
     private List<OcjenaGridModel> _ocjeneSelectedProvjere;
     private int _selectedOcjenaId;
 
+    private bool _disabled = false;
+
 
     protected override void OnInitialized()
     {
@@ -265,6 +267,7 @@
         _selectedProvjera = args.Data;
 
         _ocjeneSelectedProvjere = OcjenaGridModel.ToGridModel(ProvjeraRepository.GetOcjeneForProvjera(_selectedProvjera.ProvjeraId));
+        _disabled = false;
     }
 
     private void OnDoubleClick(RecordDoubleClickEventArgs<ProvjeraGridModel> args)
@@ -309,6 +312,8 @@
         {
             ProvjeraRepository.DeleteProvjeraById(_selectedProvjera.ProvjeraId);
             _provjere = ProvjeraGridModel.ToGridModel(ProvjeraRepository.GetAllProvjere());
+            _ocjeneSelectedProvjere = new List<OcjenaGridModel>();
+            _disabled = true;
         }
         else if (_whatIsDeleting == "ocjenu")
         {

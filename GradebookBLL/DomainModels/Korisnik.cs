@@ -9,8 +9,8 @@ namespace GradebookBLL.DomainModels
     {
         public Korisnik()
         {
-            BilješkaIdUčenikNavigation = new HashSet<Bilješka>();
-            BilješkaZabilježioKorisnikNavigation = new HashSet<Bilješka>();
+            BilješkaIdUčenikNavigation = new HashSet<Biljeska>();
+            BilješkaZabilježioKorisnikNavigation = new HashSet<Biljeska>();
             KorisnikUloga = new HashSet<KorisnikUloga>();
             NastavnikPredaje = new HashSet<NastavnikPredaje>();
             Ocjena = new HashSet<Ocjena>();
@@ -36,8 +36,8 @@ namespace GradebookBLL.DomainModels
         public IdentityUser User { get; set; }
 
         public virtual Razred IdRazredNavigation { get; set; }
-        public virtual ICollection<Bilješka> BilješkaIdUčenikNavigation { get; set; }
-        public virtual ICollection<Bilješka> BilješkaZabilježioKorisnikNavigation { get; set; }
+        public virtual ICollection<Biljeska> BilješkaIdUčenikNavigation { get; set; }
+        public virtual ICollection<Biljeska> BilješkaZabilježioKorisnikNavigation { get; set; }
         public virtual ICollection<KorisnikUloga> KorisnikUloga { get; set; }
         public virtual ICollection<NastavnikPredaje> NastavnikPredaje { get; set; }
         public virtual ICollection<Ocjena> Ocjena { get; set; }
